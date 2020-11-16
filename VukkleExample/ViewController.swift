@@ -9,7 +9,7 @@
 import UIKit
 import WebKit
 
-final class ViewController: UIViewController, WKNavigationDelegate {
+final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     
     @IBOutlet weak var containerForWKWebView: UIView!
     @IBOutlet weak var containerwkWebViewWithScript: UIView!
@@ -29,7 +29,7 @@ final class ViewController: UIViewController, WKNavigationDelegate {
         addWKWebViewForScript()
         addWKWebViewForEmoji()
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -50,6 +50,7 @@ final class ViewController: UIViewController, WKNavigationDelegate {
         
         wkWebViewWithScript = WKWebView(frame: .zero, configuration: configuration)
         wkWebViewWithScript.navigationDelegate = self
+        wkWebViewWithScript.uiDelegate = self
         self.containerwkWebViewWithScript.addSubview(wkWebViewWithScript)
         
         wkWebViewWithScript.translatesAutoresizingMaskIntoConstraints = false
@@ -102,6 +103,7 @@ final class ViewController: UIViewController, WKNavigationDelegate {
         }
     }
     
+    // MARK: WKNavigationDelegate methods
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         webView.evaluateJavaScript("document.readyState", completionHandler: { (complete, error) in
             if complete != nil {
@@ -111,6 +113,18 @@ final class ViewController: UIViewController, WKNavigationDelegate {
             }
         })
     }
-
+    
+    // MARK: WKUIDelegate methods
+    func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {
+        
+        let alertController = UIAlertController(title: prompt, message: defaultText, preferredStyle: .alert)
+        present(alertController, animated: true)
+        alertController.addTextField(configurationHandler: nil)
+        
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alertController.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (okAction) in
+            completionHandler(alertController.textFields?.first?.text)
+        }))
+    }
 }
 
