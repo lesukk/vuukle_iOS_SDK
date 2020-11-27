@@ -2,7 +2,7 @@
 //  WindowViewController.swift
 //  VukkleExample
 //
-//  Created by Valodya Galstyan on 11/19/20.
+//  Created by Narek Dallakyan on 11/19/20.
 //  Copyright © 2020 MAC_7. All rights reserved.
 //
 
@@ -64,7 +64,7 @@ class WindowViewController: UIViewController {
             wkWebView.load(URLRequest(url: url))
         }
     }
-   
+    
 }
 
 extension WindowViewController:  WKNavigationDelegate, WKUIDelegate  {
@@ -74,7 +74,7 @@ extension WindowViewController:  WKNavigationDelegate, WKUIDelegate  {
         webView.evaluateJavaScript("document.readyState", completionHandler: { (complete, error) in
             if complete != nil {
                 webView.evaluateJavaScript("document.body.offsetHeight", completionHandler: { (height, error) in
-
+                    
                 })
             }
         })
@@ -82,13 +82,7 @@ extension WindowViewController:  WKNavigationDelegate, WKUIDelegate  {
     
     
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        
-        if (navigationAction.request.url?.absoluteString ?? "") == VUUKLE_GOOGLE_LOGIN {
-            self.configuration.applicationNameForUserAgent = "Version/8.0.2 Safari/600.2.5"
-//            webView.load(navigationAction.request)
-//            return WKWebView(frame: webView.frame, configuration: self.configuration)
-        }
-        //wkWebView = WKWebView(frame: self.view.frame, configuration: configuration)
+
         webView.load(navigationAction.request)
         webView.evaluateJavaScript("window.open = function(open) { return function (url, name, features) { window.location.href = url; return window; }; } (window.open);", completionHandler: nil)
         webView.evaluateJavaScript("window.close = function() { window.location.href = 'myapp://closewebview'; }", completionHandler: nil)
@@ -109,24 +103,17 @@ extension WindowViewController:  WKNavigationDelegate, WKUIDelegate  {
     }
     
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Swift.Void) {
-        print("decidePolicyFor url = \(navigationAction.request.url?.absoluteString)")
-            if(navigationAction.navigationType == .other) {
-                if navigationAction.request.url != nil {
-//                    if (navigationAction.request.url?.absoluteString ?? "").contains(VUUKLE_SOCIAL_LOGIN_SUCCESS) {
-//                        self.wkWebView.reload()
-//                        decisionHandler(.cancel)
-//                        return
-//                    }
-                    //do what you need with url
-                    if (navigationAction.request.url?.absoluteString.contains(VUUKLE_SOCIAL_LOGIN_SUCCESS))! {
-                        self.navigationController?.popViewController(animated: true)
-                    }
+        if(navigationAction.navigationType == .other) {
+            if navigationAction.request.url != nil {
+               
+                if (navigationAction.request.url?.absoluteString.contains(VUUKLE_SOCIAL_LOGIN_SUCCESS))! {
+                    self.navigationController?.popViewController(animated: true)
                 }
-                decisionHandler(.allow)
-                return
             }
             decisionHandler(.allow)
+            return
         }
-    
-   
+        decisionHandler(.allow)
+    }
+
 }

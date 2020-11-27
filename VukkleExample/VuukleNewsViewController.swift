@@ -2,7 +2,7 @@
 //  VuukleNewsViewController.swift
 //  VukkleExample
 //
-//  Created by Valodya Galstyan on 11/22/20.
+//  Created by Nrek Dallakyan on 11/22/20.
 //  Copyright © 2020 MAC_7. All rights reserved.
 //
 
@@ -34,8 +34,6 @@ class VuukleNewsViewController: UIViewController {
                 target: self.wkWebView,
                 action: #selector(WKWebView.goBack))
             self.backButton = backButton
-        } else {
-            // Fallback on earlier versions
         }
         if #available(iOS 13.0, *) {
             let forwardButton = UIBarButtonItem(
@@ -44,8 +42,6 @@ class VuukleNewsViewController: UIViewController {
                 target: self.wkWebView,
                 action: #selector(WKWebView.goForward))
             self.forwardButton = forwardButton
-        } else {
-            // Fallback on earlier versions
         }
         
         navigationItem.rightBarButtonItems = [self.forwardButton!, self.backButton!]
@@ -86,6 +82,7 @@ class VuukleNewsViewController: UIViewController {
 }
 
 extension VuukleNewsViewController:  WKNavigationDelegate, WKUIDelegate  {
+    
     // MARK: WKNavigationDelegate methods
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         self.wkWebView.isHidden = false
@@ -97,7 +94,6 @@ extension VuukleNewsViewController:  WKNavigationDelegate, WKUIDelegate  {
             }
         })
     }
-    
     
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         
@@ -164,6 +160,4 @@ extension VuukleNewsViewController:  WKNavigationDelegate, WKUIDelegate  {
         
         completionHandler(true)
     }
-    
-
 }
