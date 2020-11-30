@@ -43,6 +43,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         addWKWebViewForEmoji()
     }
     
+    // Ask permission to use camera For adding photo in the comment box
     func askCameraAccess() {
         AVCaptureDevice.requestAccess(for: AVMediaType.video) { response in
             if response {
@@ -81,6 +82,8 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         wkWebViewWithScript.bottomAnchor.constraint(equalTo: self.containerwkWebViewWithScript.bottomAnchor).isActive = true
         wkWebViewWithScript.leftAnchor.constraint(equalTo: self.containerwkWebViewWithScript.leftAnchor).isActive = true
         wkWebViewWithScript.rightAnchor.constraint(equalTo: self.containerwkWebViewWithScript.rightAnchor).isActive = true
+        
+        // Added this Observer for detect wkWebView's scrollview contentSize height updates
         wkWebViewWithScript.scrollView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
         wkWebViewWithScript.scrollView.isScrollEnabled = false
         if let url = URL(string: VUUKLE_IFRAME) {
@@ -106,7 +109,6 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         self.containerForWKWebView.addSubview(wkWebViewWithEmoji)
         
         wkWebViewWithEmoji.translatesAutoresizingMaskIntoConstraints = false
-        
         wkWebViewWithEmoji.topAnchor.constraint(equalTo: self.containerForWKWebView.topAnchor).isActive = true
         wkWebViewWithEmoji.bottomAnchor.constraint(equalTo: self.containerForWKWebView.bottomAnchor).isActive = true
         wkWebViewWithEmoji.leftAnchor.constraint(equalTo: self.containerForWKWebView.leftAnchor).isActive = true
@@ -136,30 +138,19 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     
     private func openNewWindow(newURL: String) {
         
-        if newURL == VUUKLE_FACEBOOK_LOGIN {
-            wkWebViewWithScript.load(URLRequest(url: URL(string:"about:blank")!))
-            self.openNewWindow(withURL: VUUKLE_FACEBOOK_LOGIN)
-        } else if newURL == VUUKLE_TWITTER_LOGIN {
-            wkWebViewWithScript.load(URLRequest(url: URL(string:"about:blank")!))
-            self.openNewWindow(withURL: VUUKLE_TWITTER_LOGIN)
-        } else if newURL == VUUKLE_GOOGLE_LOGIN {
-            wkWebViewWithScript.load(URLRequest(url: URL(string:"about:blank")!))
-            self.openNewWindow(withURL: VUUKLE_GOOGLE_LOGIN)
-        } else if newURL.hasPrefix(VUUKLE_FB_SHARE) {
-            wkWebViewWithScript.load(URLRequest(url: URL(string:"about:blank")!))
+        switch newURL {
+        case VUUKLE_FACEBOOK_LOGIN, VUUKLE_TWITTER_LOGIN, VUUKLE_GOOGLE_LOGIN, VUUKLE_PRIVACY, VUUKLE_RESET_PASSWORD:
+            wkWebViewWithScript.load(URLRequest(url: URL(string: "about:blank")!))
             self.openNewWindow(withURL: newURL)
-        } else if newURL.hasPrefix(VUUKLE_TWITTER_SHARE) {
-            wkWebViewWithScript.load(URLRequest(url: URL(string:"about:blank")!))
+        default: break
+        }
+        
+        if newURL.hasPrefix(VUUKLE_FB_SHARE) || newURL.hasPrefix(VUUKLE_TWITTER_SHARE) {
+            wkWebViewWithScript.load(URLRequest(url: URL(string: "about:blank")!))
             self.openNewWindow(withURL: newURL)
         } else if newURL.hasPrefix(VUUKLE_NEWS_BASE_URL) {
-            wkWebViewWithScript.load(URLRequest(url: URL(string:"about:blank")!))
+            wkWebViewWithScript.load(URLRequest(url: URL(string: "about:blank")!))
             self.openNewsWindow(withURL: newURL)
-        } else if newURL == VUUKLE_PRIVACY {
-            wkWebViewWithScript.load(URLRequest(url: URL(string:"about:blank")!))
-            self.openNewWindow(withURL: VUUKLE_PRIVACY)
-        } else if newURL == VUUKLE_RESET_PASSWORD {
-            wkWebViewWithScript.load(URLRequest(url: URL(string:"about:blank")!))
-            self.openNewWindow(withURL: VUUKLE_RESET_PASSWORD)
         }
     }
     
@@ -169,13 +160,9 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         
         webView.evaluateJavaScript("document.readyState", completionHandler: { (complete, error) in
             if complete != nil {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    webView.evaluateJavaScript("document.body.scrollHeight", completionHandler: { [self] (height, error) in
-                        print(" --- height = \(height)")
-                        self.heightWKWebViewWithScript.constant = height as! CGFloat
-                        scriptWebViewHeight = height as! CGFloat
-                    })
-                }
+                webView.evaluateJavaScript("document.body.offsetHeight", completionHandler: { (height, error) in
+                    // You can detect webView's scrollView contentSize height
+                })
             }
         })
     }
@@ -214,44 +201,13 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         webView.evaluateJavaScript("window.open = function(open) { return function (url, name, features) { window.location.href = url; return window; }; } (window.open);", completionHandler: nil)
         webView.evaluateJavaScript("window.close = function() { window.location.href = 'myapp://closewebview'; }", completionHandler: nil)
         
-        webView.evaluateJavaScript("""
-            document.onreadystatechange = function () {
-              if (document.readyState == "interactive") {
-                initApplication();
-              }
-            }
-            """, completionHandler: { result, error in
-                print("interactive")
-            })
-        
-        webView.evaluateJavaScript("""
-            document.onreadystatechange = function () {
-              if (document.readyState == "complete") {
-                initApplication();
-              }
-            }
-            """, completionHandler: { result, error in
-                print("complete")
-            })
-
-        webView.evaluateJavaScript("""
-            var bootstrap = function(evt){
-              if (evt.target.readyState === "interactive") { initLoader(); }
-              else if (evt.target.readyState === "complete") { initApp(); }
-            }
-            document.addEventListener('readystatechange', bootstrap, false);
-            """, completionHandler: { result, error in
-                print("readystatechange")
-            })
         return nil
     }
     
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Swift.Void) {
         self.heightWKWebViewWithScript.constant = scriptWebViewHeight
         if navigationAction.navigationType == .linkActivated {
-            if (navigationAction.request.url?.absoluteString ?? "") != VUUKLE_NEWS_BASE_URL + "notifications" && !((navigationAction.request.url?.absoluteString ?? "").hasPrefix(VUUKLE_NEWS_BASE_URL + "profile")) {
                 openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "")
-            }
             decisionHandler(.allow)
             return
         }

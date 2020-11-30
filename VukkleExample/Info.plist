@@ -42,9 +42,9 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>For adding photo in the  comment box</string>
+	<string>For adding photo in the comment box</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>For adding photo in the  comment box</string>
+	<string>For adding photo in the comment box</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

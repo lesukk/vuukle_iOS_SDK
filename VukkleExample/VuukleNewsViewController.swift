@@ -126,20 +126,14 @@ extension VuukleNewsViewController:  WKNavigationDelegate, WKUIDelegate  {
     }
     
     private func openNewWindow(newURL: String) {
-        if newURL == VUUKLE_FACEBOOK_LOGIN {
-            self.openNewWindow(withURL: VUUKLE_FACEBOOK_LOGIN)
-        } else if newURL == VUUKLE_TWITTER_LOGIN {
-            self.openNewWindow(withURL: VUUKLE_TWITTER_LOGIN)
-        } else if newURL == VUUKLE_GOOGLE_LOGIN {
-            self.openNewWindow(withURL: VUUKLE_GOOGLE_LOGIN)
-        } else if newURL.hasPrefix(VUUKLE_FB_SHARE) {
+        switch newURL {
+        case VUUKLE_FACEBOOK_LOGIN, VUUKLE_TWITTER_LOGIN, VUUKLE_GOOGLE_LOGIN, VUUKLE_PRIVACY, VUUKLE_RESET_PASSWORD:
             self.openNewWindow(withURL: newURL)
-        } else if newURL.hasPrefix(VUUKLE_TWITTER_SHARE) {
+        default: break
+        }
+        
+        if newURL.hasPrefix(VUUKLE_FB_SHARE) || newURL.hasPrefix(VUUKLE_TWITTER_SHARE) {
             self.openNewWindow(withURL: newURL)
-        } else if newURL == VUUKLE_PRIVACY {
-            self.openNewWindow(withURL: VUUKLE_PRIVACY)
-        } else if newURL == VUUKLE_RESET_PASSWORD {
-            self.openNewWindow(withURL: VUUKLE_RESET_PASSWORD)
         }
     }
     

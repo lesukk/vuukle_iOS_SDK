@@ -47,24 +47,22 @@ class WindowViewController: UIViewController {
     
     private func addWKWebView() {
         
+        // Added userAgent for use google login web page in our wkWebView
         if urlString == VUUKLE_GOOGLE_LOGIN {
             configuration.applicationNameForUserAgent = "Version/8.0.2 Safari/600.2.5"
         }
         
         wkWebView = WKWebView(frame: self.view.frame, configuration: configuration)
         self.view.addSubview(wkWebView)
-        
         wkWebView.navigationDelegate = self
         wkWebView.uiDelegate = self
         self.wkWebView.isHidden = true
         self.view.backgroundColor = .white
         
-        
         if let url = URL(string: urlString) {
             wkWebView.load(URLRequest(url: url))
         }
     }
-    
 }
 
 extension WindowViewController:  WKNavigationDelegate, WKUIDelegate  {
@@ -74,7 +72,7 @@ extension WindowViewController:  WKNavigationDelegate, WKUIDelegate  {
         webView.evaluateJavaScript("document.readyState", completionHandler: { (complete, error) in
             if complete != nil {
                 webView.evaluateJavaScript("document.body.offsetHeight", completionHandler: { (height, error) in
-                    
+                    // You can detect webView scroll contentSize height
                 })
             }
         })
