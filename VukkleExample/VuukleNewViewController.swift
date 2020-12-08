@@ -1,90 +1,120 @@
 //
-//  WindowViewController.swift
+//  VuukleNewsViewController.swift
 //  VukkleExample
 //
-//  Created by Narek Dallakyan on 11/19/20.
+//  Created by Nrek Dallakyan on 11/22/20.
 //  Copyright © 2020 MAC_7. All rights reserved.
 //
 
 import UIKit
 import WebKit
 
-class WindowViewController: UIViewController {
+class VuukleNewViewController: UIViewController {
     
-    @IBOutlet weak var webConfigureView: UIView!
     var wkWebView: WKWebView!
     var configuration = WKWebViewConfiguration()
     
     var urlString = ""
+    var isLoadedSettings = false
+    var backButton: UIBarButtonItem?
+    var forwardButton: UIBarButtonItem?
+    var cookies: [HTTPCookie] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setTitle()
         addWKWebView()
-        
+        addNewButtonsOnNavigationBar()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         edgesForExtendedLayout = []
     }
     
-    func setTitle() {
-        switch urlString {
-        case VUUKLE_FACEBOOK_LOGIN:
-            self.title = "FACEBOOK LOGIN"
-        case VUUKLE_GOOGLE_LOGIN:
-            self.title = "GOOGLE LOGIN"
-        case VUUKLE_TWITTER_LOGIN:
-            self.title = "TWITTER LOGIN"
-        default: break
-        }
-    }
-    
     override func viewWillDisappear(_ animated: Bool) {
         NotificationCenter.default.post(name: NSNotification.Name("updateWebViews"), object: nil)
     }
     
-    private func addWKWebView() {
+    override func viewDidDisappear(_ animated: Bool) {
+        NotificationCenter.default.post(name: NSNotification.Name("updateWebViews"), object: nil)
+    }
+    
+    func addNewButtonsOnNavigationBar() {
         
-        // Added userAgent for use google login web page in our wkWebView
-        if urlString == VUUKLE_GOOGLE_LOGIN {
-            configuration.applicationNameForUserAgent = "Version/8.0.2 Safari/600.2.5"
+        self.navigationController?.setToolbarHidden(false, animated: true)
+        if #available(iOS 13.0, *) {
+            let backButton = UIBarButtonItem(
+                image: UIImage(systemName: "arrow.left")!.withTintColor(.blue, renderingMode: .alwaysTemplate),
+                style: .plain,
+                target: self.wkWebView,
+                action: #selector(WKWebView.goBack))
+            self.backButton = backButton
+        }
+        if #available(iOS 13.0, *) {
+            let forwardButton = UIBarButtonItem(
+                image: UIImage(systemName: "arrow.right")!.withTintColor(.blue, renderingMode: .alwaysTemplate),
+                style: .plain,
+                target: self.wkWebView,
+                action: #selector(WKWebView.goForward))
+            self.forwardButton = forwardButton
         }
         
-        wkWebView = WKWebView(frame: self.view.frame, configuration: configuration)
+        navigationItem.rightBarButtonItems = [self.forwardButton!, self.backButton!]
+    }
+    
+    @objc func configureWebView() {
+        wkWebView.reload()
+    }
+    
+    private func addWKWebView() {
+        
+        let config = WKWebViewConfiguration()
+        config.processPool = WKProcessPool()
+        let cookies = HTTPCookieStorage.shared.cookies ?? [HTTPCookie]()
+        cookies.forEach({ if #available(iOS 11.0, *) {
+            config.websiteDataStore.httpCookieStore.setCookie($0, completionHandler: nil)
+        } else {
+            
+        } })
+        
+        wkWebView = WKWebView(frame: self.view.frame, configuration: config)
         self.view.addSubview(wkWebView)
+        
         wkWebView.navigationDelegate = self
         wkWebView.uiDelegate = self
         self.wkWebView.isHidden = true
         self.view.backgroundColor = .white
         
+        if urlString == VUUKLE_SETTINGS {
+            isLoadedSettings = true
+        } else {
+            isLoadedSettings = false
+        }
         if let url = URL(string: urlString) {
             wkWebView.load(URLRequest(url: url))
         }
     }
 }
 
-extension WindowViewController:  WKNavigationDelegate, WKUIDelegate  {
+extension VuukleNewViewController:  WKNavigationDelegate, WKUIDelegate  {
+    
     // MARK: WKNavigationDelegate methods
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         self.wkWebView.isHidden = false
         webView.evaluateJavaScript("document.readyState", completionHandler: { (complete, error) in
             if complete != nil {
                 webView.evaluateJavaScript("document.body.offsetHeight", completionHandler: { (height, error) in
-                    // You can detect webView scroll contentSize height
+                    
                 })
             }
         })
     }
     
-    
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-
+        
         webView.load(navigationAction.request)
         webView.evaluateJavaScript("window.open = function(open) { return function (url, name, features) { window.location.href = url; return window; }; } (window.open);", completionHandler: nil)
         webView.evaluateJavaScript("window.close = function() { window.location.href = 'myapp://closewebview'; }", completionHandler: nil)
-        
         return nil
     }
     
@@ -101,17 +131,27 @@ extension WindowViewController:  WKNavigationDelegate, WKUIDelegate  {
     }
     
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Swift.Void) {
-        if(navigationAction.navigationType == .other) {
-            if navigationAction.request.url != nil {
-               
-                if (navigationAction.request.url?.absoluteString.contains(VUUKLE_SOCIAL_LOGIN_SUCCESS))! {
+        
+        if navigationAction.navigationType == .other {
+            if (navigationAction.request.url?.absoluteString.contains(VUUKLE_SOCIAL_LOGIN_SUCCESS))! {
+                if isLoadedSettings {
+                    wkWebView.goBack()
+                } else {
                     self.navigationController?.popViewController(animated: true)
                 }
             }
-            decisionHandler(.allow)
-            return
         }
+        
         decisionHandler(.allow)
+        return
     }
-
+   
+    func webView(_ webView: WKWebView, shouldPreviewElement elementInfo: WKPreviewElementInfo) -> Bool {
+        return true
+    }
+    
+    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
+        
+        completionHandler(true)
+    }
 }

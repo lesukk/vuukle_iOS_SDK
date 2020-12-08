@@ -13,9 +13,9 @@
 		4AC9D33D1FEBE0C800383837 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AC9D33B1FEBE0C800383837 /* Main.storyboard */; };
 		4AC9D33F1FEBE0C800383837 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4AC9D33E1FEBE0C800383837 /* Assets.xcassets */; };
 		4AC9D3421FEBE0C800383837 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AC9D3401FEBE0C800383837 /* LaunchScreen.storyboard */; };
+		6C174F2E2578DE3000D7A322 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C174F2D2578DE3000D7A322 /* MessageUI.framework */; };
 		6CB8C05E2566E67A00079792 /* GlobalConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB8C05D2566E67900079792 /* GlobalConfig.swift */; };
-		6CB8C0612566EBDB00079792 /* WindowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB8C0602566EBDA00079792 /* WindowViewController.swift */; };
-		6CC4449D256ADF98007288C9 /* VuukleNewsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CC4449C256ADF98007288C9 /* VuukleNewsViewController.swift */; };
+		6CC4449D256ADF98007288C9 /* VuukleNewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CC4449C256ADF98007288C9 /* VuukleNewViewController.swift */; };
 		6CCFD368256CFBF6006A832C /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6CCFD367256CFBF6006A832C /* SafariServices.framework */; };
 /* End PBXBuildFile section */
 
@@ -28,9 +28,9 @@
 		4AC9D33E1FEBE0C800383837 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4AC9D3411FEBE0C800383837 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4AC9D3431FEBE0C800383837 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6C174F2D2578DE3000D7A322 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		6CB8C05D2566E67900079792 /* GlobalConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalConfig.swift; sourceTree = "<group>"; };
-		6CB8C0602566EBDA00079792 /* WindowViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowViewController.swift; sourceTree = "<group>"; };
-		6CC4449C256ADF98007288C9 /* VuukleNewsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VuukleNewsViewController.swift; sourceTree = "<group>"; };
+		6CC4449C256ADF98007288C9 /* VuukleNewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VuukleNewViewController.swift; sourceTree = "<group>"; };
 		6CCFD367256CFBF6006A832C /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -39,6 +39,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6C174F2E2578DE3000D7A322 /* MessageUI.framework in Frameworks */,
 				6CCFD368256CFBF6006A832C /* SafariServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -74,8 +75,7 @@
 				4AC9D3401FEBE0C800383837 /* LaunchScreen.storyboard */,
 				4AC9D3431FEBE0C800383837 /* Info.plist */,
 				6CB8C05D2566E67900079792 /* GlobalConfig.swift */,
-				6CB8C0602566EBDA00079792 /* WindowViewController.swift */,
-				6CC4449C256ADF98007288C9 /* VuukleNewsViewController.swift */,
+				6CC4449C256ADF98007288C9 /* VuukleNewViewController.swift */,
 			);
 			path = VukkleExample;
 			sourceTree = "<group>";
@@ -83,6 +83,7 @@
 		6CCFD366256CFBF6006A832C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6C174F2D2578DE3000D7A322 /* MessageUI.framework */,
 				6CCFD367256CFBF6006A832C /* SafariServices.framework */,
 			);
 			name = Frameworks;
@@ -161,8 +162,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6CC4449D256ADF98007288C9 /* VuukleNewsViewController.swift in Sources */,
-				6CB8C0612566EBDB00079792 /* WindowViewController.swift in Sources */,
+				6CC4449D256ADF98007288C9 /* VuukleNewViewController.swift in Sources */,
 				4AC9D33A1FEBE0C800383837 /* ViewController.swift in Sources */,
 				4AC9D3381FEBE0C800383837 /* AppDelegate.swift in Sources */,
 				6CB8C05E2566E67A00079792 /* GlobalConfig.swift in Sources */,

@@ -9,11 +9,15 @@
 import UIKit
 import WebKit
 import AVFoundation
+import MessageUI
 
 final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, UIScrollViewDelegate {
     
     @IBOutlet weak var containerForWKWebView: UIView!
     @IBOutlet weak var containerwkWebViewWithScript: UIView!
+    @IBOutlet weak var containerForTopPowerBar: UIView!
+    @IBOutlet weak var containerForBottomPowerBar: UIView!
+    
     @IBOutlet weak var someTextLabel: UILabel!
     @IBOutlet weak var heightWKWebViewWithScript: NSLayoutConstraint!
     @IBOutlet weak var heightWKWebViewConstraint: NSLayoutConstraint!
@@ -22,12 +26,16 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     
     private var wkWebViewWithScript: WKWebView!
     private var wkWebViewWithEmoji: WKWebView!
+    private var wkWebViewForTopPowerBar: WKWebView!
+    private var wkWebViewForBottonPowerBar: WKWebView!
+    
     private let configuration = WKWebViewConfiguration()
     private var scriptWebViewHeight: CGFloat = 0
+    var newWebviewPopupWindow: WKWebView?
     
     let name = "Ross"
     let email = "email@sda"
-        
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -37,38 +45,32 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         configureWebView()
         askCameraAccess()
     }
-   
+    
     @objc func configureWebView() {
         addWKWebViewForScript()
         addWKWebViewForEmoji()
+        addWKWebViewForTopPowerBar()
+        addWKWebViewForBottomPowerBar()
     }
     
     // Ask permission to use camera For adding photo in the comment box
     func askCameraAccess() {
         AVCaptureDevice.requestAccess(for: AVMediaType.video) { response in
             if response {
-                //access granted
+                // access granted
             } else {
-
+                // access not granted
             }
         }
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
+    // Create WebView for Comment Box
     private func addWKWebViewForScript() {
         
-        let contentController = WKUserContentController()
-        let userScript = WKUserScript(
-            source: "signInUser('\(name)', '\(email)')",
-            injectionTime: WKUserScriptInjectionTime.atDocumentEnd,
-            forMainFrameOnly: true
-        )
-        contentController.addUserScript(userScript)
-        configuration.userContentController = contentController
+        let thePreferences = WKPreferences()
+        thePreferences.javaScriptCanOpenWindowsAutomatically = true
+        thePreferences.javaScriptEnabled = true
+        configuration.preferences = thePreferences
         
         wkWebViewWithScript = WKWebView(frame: .zero, configuration: configuration)
         wkWebViewWithScript.navigationDelegate = self
@@ -77,7 +79,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         
         wkWebViewWithScript.translatesAutoresizingMaskIntoConstraints = false
         wkWebViewWithScript.scrollView.layer.masksToBounds = false
-
+        
         wkWebViewWithScript.topAnchor.constraint(equalTo: self.containerwkWebViewWithScript.topAnchor).isActive = true
         wkWebViewWithScript.bottomAnchor.constraint(equalTo: self.containerwkWebViewWithScript.bottomAnchor).isActive = true
         wkWebViewWithScript.leftAnchor.constraint(equalTo: self.containerwkWebViewWithScript.leftAnchor).isActive = true
@@ -86,12 +88,68 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         // Added this Observer for detect wkWebView's scrollview contentSize height updates
         wkWebViewWithScript.scrollView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
         wkWebViewWithScript.scrollView.isScrollEnabled = false
+        
         if let url = URL(string: VUUKLE_IFRAME) {
             wkWebViewWithScript.load(URLRequest(url: url))
         }
         
     }
     
+    // Create WebView for Emoji
+    private func addWKWebViewForEmoji() {
+        
+        wkWebViewWithEmoji = WKWebView(frame: .zero, configuration: configuration)
+        self.containerForWKWebView.addSubview(wkWebViewWithEmoji)
+        
+        wkWebViewWithEmoji.translatesAutoresizingMaskIntoConstraints = false
+        wkWebViewWithEmoji.topAnchor.constraint(equalTo: self.containerForWKWebView.topAnchor).isActive = true
+        wkWebViewWithEmoji.bottomAnchor.constraint(equalTo: self.containerForWKWebView.bottomAnchor).isActive = true
+        wkWebViewWithEmoji.leftAnchor.constraint(equalTo: self.containerForWKWebView.leftAnchor).isActive = true
+        wkWebViewWithEmoji.rightAnchor.constraint(equalTo: self.containerForWKWebView.rightAnchor).isActive = true
+        
+        if let url = URL(string: VUUKLE_EMOTES) {
+            wkWebViewWithEmoji.load(URLRequest(url: url))
+        }
+    }
+    
+    // Create WebView for Top PowerBar
+    private func addWKWebViewForTopPowerBar() {
+        
+        wkWebViewForTopPowerBar = WKWebView(frame: .zero, configuration: configuration)
+        self.containerForTopPowerBar.addSubview(wkWebViewForTopPowerBar)
+        
+        wkWebViewForTopPowerBar.translatesAutoresizingMaskIntoConstraints = false
+        wkWebViewForTopPowerBar.topAnchor.constraint(equalTo: self.containerForTopPowerBar.topAnchor).isActive = true
+        wkWebViewForTopPowerBar.bottomAnchor.constraint(equalTo: self.containerForTopPowerBar.bottomAnchor).isActive = true
+        wkWebViewForTopPowerBar.leftAnchor.constraint(equalTo: self.containerForTopPowerBar.leftAnchor).isActive = true
+        wkWebViewForTopPowerBar.rightAnchor.constraint(equalTo: self.containerForTopPowerBar.rightAnchor).isActive = true
+        wkWebViewForTopPowerBar.uiDelegate = self
+        wkWebViewForTopPowerBar.navigationDelegate = self
+        
+        if let url = URL(string: VUUKLE_POWERBAR) {
+            wkWebViewForTopPowerBar.load(URLRequest(url: url))
+        }
+    }
+    
+    // Create WebView for Bottom PowerBar
+    private func addWKWebViewForBottomPowerBar() {
+        
+        wkWebViewForBottonPowerBar = WKWebView(frame: .zero, configuration: configuration)
+        self.containerForBottomPowerBar.addSubview(wkWebViewForBottonPowerBar)
+        
+        wkWebViewForBottonPowerBar.translatesAutoresizingMaskIntoConstraints = false
+        wkWebViewForBottonPowerBar.topAnchor.constraint(equalTo: self.containerForBottomPowerBar.topAnchor).isActive = true
+        wkWebViewForBottonPowerBar.bottomAnchor.constraint(equalTo: self.containerForBottomPowerBar.bottomAnchor).isActive = true
+        wkWebViewForBottonPowerBar.leftAnchor.constraint(equalTo: self.containerForBottomPowerBar.leftAnchor).isActive = true
+        wkWebViewForBottonPowerBar.rightAnchor.constraint(equalTo: self.containerForBottomPowerBar.rightAnchor).isActive = true
+        wkWebViewForBottonPowerBar.uiDelegate = self
+        wkWebViewForBottonPowerBar.navigationDelegate = self
+        if let url = URL(string: VUUKLE_POWERBAR) {
+            wkWebViewForBottonPowerBar.load(URLRequest(url: url))
+        }
+    }
+    
+    // Observer for detect wkWebView's scrollview contentSize height updates
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "contentSize" {
             if let scroll = object as? UIScrollView {
@@ -100,22 +158,6 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
                     scriptWebViewHeight = scroll.contentSize.height
                 }
             }
-        }
-    }
-    
-    private func addWKWebViewForEmoji() {
-        wkWebViewWithEmoji = WKWebView(frame: .zero, configuration: configuration)
-        
-        self.containerForWKWebView.addSubview(wkWebViewWithEmoji)
-        
-        wkWebViewWithEmoji.translatesAutoresizingMaskIntoConstraints = false
-        wkWebViewWithEmoji.topAnchor.constraint(equalTo: self.containerForWKWebView.topAnchor).isActive = true
-        wkWebViewWithEmoji.bottomAnchor.constraint(equalTo: self.containerForWKWebView.bottomAnchor).isActive = true
-        wkWebViewWithEmoji.leftAnchor.constraint(equalTo: self.containerForWKWebView.leftAnchor).isActive = true
-        wkWebViewWithEmoji.rightAnchor.constraint(equalTo: self.containerForWKWebView.rightAnchor).isActive = true
-
-        if let url = URL(string: VUUKLE_EMOTES) {
-            wkWebViewWithEmoji.load(URLRequest(url: url))
         }
     }
     
@@ -138,30 +180,36 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     
     private func openNewWindow(newURL: String) {
         
-        switch newURL {
-        case VUUKLE_FACEBOOK_LOGIN, VUUKLE_TWITTER_LOGIN, VUUKLE_GOOGLE_LOGIN, VUUKLE_PRIVACY, VUUKLE_RESET_PASSWORD:
-            wkWebViewWithScript.load(URLRequest(url: URL(string: "about:blank")!))
-            self.openNewWindow(withURL: newURL)
-        default: break
-        }
-        
-        if newURL.hasPrefix(VUUKLE_FB_SHARE) || newURL.hasPrefix(VUUKLE_TWITTER_SHARE) {
-            wkWebViewWithScript.load(URLRequest(url: URL(string: "about:blank")!))
-            self.openNewWindow(withURL: newURL)
-        } else if newURL.hasPrefix(VUUKLE_NEWS_BASE_URL) {
-            wkWebViewWithScript.load(URLRequest(url: URL(string: "about:blank")!))
-            self.openNewsWindow(withURL: newURL)
+        for url in VUUKLE_URLS {
+            if newURL.hasPrefix(VUUKLE_MAIL_SHARE) {
+                let mailSubjectBody = parsMailSubjextAndBody(mailto: newURL)
+                sendEmail(subject: mailSubjectBody.subject, body: mailSubjectBody.body)
+                return
+            } else if newURL.hasPrefix(VUUKLE_MESSENGER_SHARE) {
+                let messengerUrlString = replaceLinkSymboles(text: newURL)
+                guard let messengerUrl = URL(string: messengerUrlString) else { return }
+                UIApplication.shared.open(messengerUrl)
+                return
+            } else if newURL.hasPrefix(url) {
+                wkWebViewWithScript.load(URLRequest(url: URL(string: "about:blank")!))
+                self.openNewsWindow(withURL: newURL)
+                return
+            }
         }
     }
     
     // MARK: - WKNavigationDelegate methods
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        
+        print("BASE URL = \(webView.url?.absoluteString ?? "")")
         webView.evaluateJavaScript("document.readyState", completionHandler: { (complete, error) in
             if complete != nil {
                 webView.evaluateJavaScript("document.body.offsetHeight", completionHandler: { (height, error) in
                     // You can detect webView's scrollView contentSize height
+                    if webView == self.wkWebViewWithScript {
+                        self.heightWKWebViewWithScript.constant = height as! CGFloat
+                        self.scriptWebViewHeight = height as! CGFloat
+                    }
                 })
             }
         })
@@ -169,7 +217,6 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     
     // MARK: - WKUIDelegate methods
     func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {
-        
         let alertController = UIAlertController(title: prompt, message: defaultText, preferredStyle: .alert)
         present(alertController, animated: true)
         alertController.addTextField(configurationHandler: nil)
@@ -187,7 +234,14 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     }
     
     func webView(_ webView: WKWebView, shouldPreviewElement elementInfo: WKPreviewElementInfo) -> Bool {
+        if let elementURL = elementInfo.linkURL?.absoluteString {
+            openNewWindow(newURL: elementURL)
+        }
         return true
+    }
+    
+    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
+        completionHandler()
     }
     
     func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
@@ -199,36 +253,106 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "")
         
         webView.evaluateJavaScript("window.open = function(open) { return function (url, name, features) { window.location.href = url; return window; }; } (window.open);", completionHandler: nil)
+        
         webView.evaluateJavaScript("window.close = function() { window.location.href = 'myapp://closewebview'; }", completionHandler: nil)
         
         return nil
     }
     
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Swift.Void) {
+        
+        print("BASE URL = \(webView.url?.absoluteString ?? "")")
         self.heightWKWebViewWithScript.constant = scriptWebViewHeight
         if navigationAction.navigationType == .linkActivated {
-                openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "")
+            openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "")
             decisionHandler(.allow)
             return
+        } else if navigationAction.navigationType == .other {
+            if (navigationAction.request.url?.absoluteString ?? "").hasPrefix(VUUKLE_MAIL_SHARE) || (navigationAction.request.url?.absoluteString ?? "").hasPrefix(VUUKLE_MESSENGER_SHARE) {
+                openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "")
+            }
         }
         decisionHandler(.allow)
         return
     }
-    
-    func openNewWindow(withURL: String) {
-        let newWindow = WindowViewController()
-        newWindow.wkWebView = self.wkWebViewWithScript
-        newWindow.configuration = self.configuration
-        newWindow.urlString = withURL
-        self.navigationController?.pushViewController(newWindow, animated: true)
-    }
-    
+   
     func openNewsWindow(withURL: String) {
-        let newsWindow = VuukleNewsViewController()
+        let newsWindow = VuukleNewViewController()
         newsWindow.wkWebView = self.wkWebViewWithScript
         newsWindow.configuration = self.configuration
         newsWindow.urlString = withURL
         self.navigationController?.pushViewController(newsWindow, animated: true)
     }
+}
+
+// MARK: - SEND EMAIL Metods
+extension ViewController: MFMailComposeViewControllerDelegate {
     
+    func sendEmail(subject: String, body: String) {
+        let recipientEmail = ""
+        // Show default mail composer
+        if MFMailComposeViewController.canSendMail() {
+            let mail = MFMailComposeViewController()
+            mail.mailComposeDelegate = self
+            mail.setToRecipients([recipientEmail])
+            mail.setSubject(subject)
+            mail.setMessageBody(body, isHTML: false)
+            present(mail, animated: true)
+            
+        } else if let emailUrl = createEmailUrl(to: recipientEmail, subject: subject, body: body) {
+            let newMailto = (emailUrl.absoluteString).replacingOccurrences(of: "%20", with: "")
+            UIApplication.shared.open(URL(string: newMailto)!)
+        }
+    }
+    
+    private func createEmailUrl(to: String, subject: String, body: String) -> URL? {
+        let subjectEncoded = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+        let bodyEncoded = body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+        
+        let gmailUrl = URL(string: "googlegmail://co?to=\(to)&subject=\(subjectEncoded)&body=\(bodyEncoded)")
+        let outlookUrl = URL(string: "ms-outlook://compose?to=\(to)&subject=\(subjectEncoded)")
+        let yahooMail = URL(string: "ymail://mail/compose?to=\(to)&subject=\(subjectEncoded)&body=\(bodyEncoded)")
+        let sparkUrl = URL(string: "readdle-spark://compose?recipient=\(to)&subject=\(subjectEncoded)&body=\(bodyEncoded)")
+        let defaultUrl = URL(string: "mailto:\(to)?subject=\(subjectEncoded)&body=\(bodyEncoded)")
+        
+        if let gmailUrl = gmailUrl, UIApplication.shared.canOpenURL(gmailUrl) {
+            return gmailUrl
+        } else if let outlookUrl = outlookUrl, UIApplication.shared.canOpenURL(outlookUrl) {
+            return outlookUrl
+        } else if let yahooMail = yahooMail, UIApplication.shared.canOpenURL(yahooMail) {
+            return yahooMail
+        } else if let sparkUrl = sparkUrl, UIApplication.shared.canOpenURL(sparkUrl) {
+            return sparkUrl
+        }
+        
+        return defaultUrl
+    }
+    
+    // Get Subject and Body from mailto url.
+    func parsMailSubjextAndBody(mailto: String) -> (subject: String, body: String) {
+        
+        let newMailto = replaceLinkSymboles(text: mailto)
+        
+        let subjectStartIndex = newMailto.firstIndex(of: "=")!
+        let subjectEndIndex = newMailto.firstIndex(of: "&")!
+        var subject = String(newMailto[subjectStartIndex..<subjectEndIndex])
+        let bodyStartIndex = newMailto.lastIndex(of: "=")!
+        var body = String(newMailto[bodyStartIndex...])
+        subject.removeFirst()
+        body.removeFirst()
+        
+        return (subject: subject, body: body)
+    }
+    
+    func replaceLinkSymboles(text: String) -> String {
+        var newText = text.replacingOccurrences(of: "%20", with: " ")
+        newText = newText.replacingOccurrences(of: "%3A", with: ":")
+        newText = newText.replacingOccurrences(of: "%2F", with: "/")
+        return newText
+    }
+    
+    // MARK: - MFMailComposeViewControllerDelegate
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true)
+    }
 }
