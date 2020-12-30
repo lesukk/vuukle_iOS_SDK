@@ -32,7 +32,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     private let configuration = WKWebViewConfiguration()
     private var scriptWebViewHeight: CGFloat = 0
     var newWebviewPopupWindow: WKWebView?
-    
+    var isKeyboardOpened = false
     let name = "Ross"
     let email = "email@sda"
     
@@ -40,18 +40,38 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         super.viewDidLoad()
         
         self.title = "VUUKLE"
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: .UIKeyboardWillShow, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(keyboardHide), name: .UIKeyboardWillHide, object: nil)
+        
         NotificationCenter.default.addObserver(self, selector: #selector(ViewController.configureWebView), name: NSNotification.Name("updateWebViews"), object: nil)
         
         configureWebView()
         askCameraAccess()
     }
-    
+
     @objc func configureWebView() {
         addWKWebViewForScript()
         addWKWebViewForEmoji()
         addWKWebViewForTopPowerBar()
         addWKWebViewForBottomPowerBar()
     }
+    
+    //Hide keyboard
+    @objc func keyboardHide() {
+        //Code the lines to hide the keyboard and the extra lines you      want to execute before keyboard hides.
+        self.perform(#selector(keyboardHided), with: nil, afterDelay: 1)
+    }
+    
+    @objc func keyboardHided() {
+        isKeyboardOpened = false
+    }
+    
+    //Show keyboard
+    @objc func keyboardShow() {
+        //Code the lines you want to execute before keyboard pops up.
+        isKeyboardOpened = true
+    }
+
     
     // Ask permission to use camera For adding photo in the comment box
     func askCameraAccess() {
@@ -62,6 +82,10 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
                 // access not granted
             }
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        wkWebViewWithScript.scrollView.removeObserver(self, forKeyPath: "contentSize", context: nil)
     }
     
     // Create WebView for Comment Box
@@ -79,6 +103,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         
         wkWebViewWithScript.translatesAutoresizingMaskIntoConstraints = false
         wkWebViewWithScript.scrollView.layer.masksToBounds = false
+        wkWebViewWithScript.scrollView.delegate = self
         
         wkWebViewWithScript.topAnchor.constraint(equalTo: self.containerwkWebViewWithScript.topAnchor).isActive = true
         wkWebViewWithScript.bottomAnchor.constraint(equalTo: self.containerwkWebViewWithScript.bottomAnchor).isActive = true
@@ -88,11 +113,14 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         // Added this Observer for detect wkWebView's scrollview contentSize height updates
         wkWebViewWithScript.scrollView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
         wkWebViewWithScript.scrollView.isScrollEnabled = false
+        wkWebViewWithScript.isMultipleTouchEnabled = false
+        wkWebViewWithScript.contentMode = .scaleAspectFit
+        wkWebViewWithScript.scrollView.bouncesZoom = false
+        //self.heightWKWebViewWithScript.constant = scriptWebViewHeight
         
         if let url = URL(string: VUUKLE_IFRAME) {
             wkWebViewWithScript.load(URLRequest(url: url))
         }
-        
     }
     
     // Create WebView for Emoji
@@ -153,7 +181,8 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "contentSize" {
             if let scroll = object as? UIScrollView {
-                if scroll.contentSize.height > 0 {
+                if scroll.contentSize.height > 0 && !isKeyboardOpened {
+                    print("scroll.contentSize.height = \(scroll.contentSize.height)")
                     self.heightWKWebViewWithScript.constant = scroll.contentSize.height
                     scriptWebViewHeight = scroll.contentSize.height
                 }
@@ -207,7 +236,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
                 webView.evaluateJavaScript("document.body.offsetHeight", completionHandler: { (height, error) in
                     // You can detect webView's scrollView contentSize height
                     if webView == self.wkWebViewWithScript {
-                        self.heightWKWebViewWithScript.constant = height as! CGFloat
+                        self.heightWKWebViewWithScript.constant = (height as? CGFloat) ?? 0.0
                         self.scriptWebViewHeight = height as! CGFloat
                     }
                 })
@@ -229,14 +258,28 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         }))
     }
     
+    func webView(_ webView: WKWebView, previewingViewControllerForElement elementInfo: WKPreviewElementInfo, defaultActions previewActions: [WKPreviewActionItem]) -> UIViewController? {
+        
+        let vc = UIViewController()
+        
+        return vc
+    }
+    
+    @available(iOS 13.0, *)
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, preferences: WKWebpagePreferences, decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
+        if (navigationAction.request.url?.absoluteString ?? "").hasPrefix(VUUKLE_MAIL_TO_SHARE) {
+            let mailSubjectBody = parsMailSubjextAndBody(mailto: navigationAction.request.url?.absoluteString ?? "")
+            sendEmail(subject: mailSubjectBody.subject, body: mailSubjectBody.body)
+        }
+        decisionHandler(WKNavigationActionPolicy.allow, preferences)
+    }
+
     func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
+        //self.openNewsWindow(withURL: navigationResponse.response.url?.absoluteString ?? "")
         decisionHandler(.allow)
     }
     
     func webView(_ webView: WKWebView, shouldPreviewElement elementInfo: WKPreviewElementInfo) -> Bool {
-        if let elementURL = elementInfo.linkURL?.absoluteString {
-            openNewWindow(newURL: elementURL)
-        }
         return true
     }
     
@@ -249,7 +292,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     }
     
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        
+        print("createWebViewWith")
         openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "")
         
         webView.evaluateJavaScript("window.open = function(open) { return function (url, name, features) { window.location.href = url; return window; }; } (window.open);", completionHandler: nil)
@@ -268,9 +311,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
             decisionHandler(.allow)
             return
         } else if navigationAction.navigationType == .other {
-            if (navigationAction.request.url?.absoluteString ?? "").hasPrefix(VUUKLE_MAIL_SHARE) || (navigationAction.request.url?.absoluteString ?? "").hasPrefix(VUUKLE_MESSENGER_SHARE) {
                 openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "")
-            }
         }
         decisionHandler(.allow)
         return
@@ -281,8 +322,10 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         newsWindow.wkWebView = self.wkWebViewWithScript
         newsWindow.configuration = self.configuration
         newsWindow.urlString = withURL
+    
         self.navigationController?.pushViewController(newsWindow, animated: true)
     }
+    
 }
 
 // MARK: - SEND EMAIL Metods

@@ -8,7 +8,7 @@
 
 import Foundation
 
-let VUUKLE_IFRAME = "https://cdn.vuukle.com/widgets/index.html?apiKey=c7368a34-dac3-4f39-9b7c-b8ac2a2da575&darkMode=false&host=smalltester.000webhostapp.com&articleId=381&img=https://smalltester.000webhostapp.com/wp-content/uploads/2017/10/wallhaven-303371-825x510.jpg&title=New&post&22&url=https://smalltester.000webhostapp.com/2017/12/new-post-22&emotesEnabled=true&firstImg=&secondImg=&thirdImg=&fourthImg=&fifthImg=&sixthImg=&refHost=smalltester.000webhostapp.com&authors=JTIySlRWQ0pUZENKVEl5Ym1GdFpTVXlNam9sTWpBbE1qSmhaRzFwYmlVeU1pd2xNakFsTWpKbGJXRnBiQ1V5TWpvbE1qSWxNaklzSlRJeWRIbHdaU1V5TWpvbE1qQWxNakpwYm5SbGNtNWhiQ1V5TWlVM1JDVTFSQT09JTIy&tags=&lang=en&l_d=false&totWideImg=false&articlesProtocol=http&color=108ee9&hideArticles=false&d=false&maxChars=3000&commentsToLoad=0&toxicityLimit=80&gr=false&customText=%7B%7D&hideCommentBox=false"
+let VUUKLE_IFRAME = "https://cdn.vuukle.com/amp.html?url=https%3A%2F%2Fwww.prowrestling.com%2Fimpact-wrestling-results-1282020%2F&host=prowrestling.com&id=1196371&apiKey=46489985-43ef-48ed-9bfd-61971e6af217&img=https%3A%2F%2Fwww.prowrestling.com%2Fwp-content%2Fuploads%2F2020%2F12%2FKenny-Omega-Impact-Wrestling.jpeg&title=IMPACT%2BWrestling%2BResults%2B%252812%252F8%2529%253A%2BKenny%2BOmega%2BSpeaks%252C%2BKnockouts%2BTag%2BTournament%2BContinues%2521&tags=Featured"
 
 let VUUKLE_EMOTES = "https://cdn.vuukle.com/widgets/emotes.html?apiKey=c7368a34-dac3-4f39-9b7c-b8ac2a2da575&darkMode=false&host=smalltester.000webhostapp.com&articleId=381&img=https://smalltester.000webhostapp.com/wp-content/uploads/2017/10/wallhaven-303371-825x510.jpg&title=New&post&22&url=https://smalltester.000webhostapp.com/2017/12/new-post-22&emotesEnabled=true&firstImg=&secondImg=&thirdImg=&fourthImg=&fifthImg=&sixthImg=&totWideImg=false&articlesProtocol=http&hideArticles=false&disable=[]&iconsSize=70&first=HAPPY&second=INDIFFERENT&third=AMUSED&fourth=EXCITED&fifth=ANGRY&sixth=SAD&customText=%7B%7D"
 
@@ -33,6 +33,7 @@ let VUUKLE_PINTEREST_SHARE = "https://pinterest.com"
 let VUUKLE_FLIPBOARD_SHARE  = "https://share.flipboard.com"
 let VUUKLE_TUMBLR_SHARE  = "https://tumblr.com/"
 let VUUKLE_MAIL_SHARE = "mailto:?subject"
+let VUUKLE_MAIL_TO_SHARE = "mailto:to?subject"
 let VUUKLE_MESSENGER_SHARE = "fb-messenger://share"
 
 // Vuukle News
@@ -40,8 +41,9 @@ let VUUKLE_NEWS_BASE_URL = "https://news.vuukle.com/"
 // Vuukle Privacy
 let VUUKLE_PRIVACY = "https://docs.vuukle.com/privacy-and-policy/"
 // Vuukle notification base URL
-let VUUKLE_NOTIFICATION_BASE = "https://api.vuukle.com/stats/External?source=notifications"
+let VUUKLE_NOTIFICATION_BASE = "https://api.vuukle.com"
 // Vuukle Base URL
 let VUUKLE_BASE = "https://vuukle.com/"
+let VUUKLE_IFRAME_BASE = "https://cdn.vuukle.com"
 
-let VUUKLE_URLS = [VUUKLE_NEWS_BASE_URL, VUUKLE_PRIVACY, VUUKLE_NOTIFICATION_BASE, VUUKLE_BASE, VUUKLE_MESSENGER_SHARE, VUUKLE_MAIL_SHARE, VUUKLE_TUMBLR_SHARE, VUUKLE_FLIPBOARD_SHARE, VUUKLE_PINTEREST_SHARE, VUUKLE_REDDIT_SHARE, VUUKLE_LINKEDIN_SHARE, VUUKLE_TELEGRAM_SHARE, VUUKLE_WEB_WHATSAPP_SHARE, VUUKLE_WHATSAPP_SHARE, VUUKLE_TWITTER_SHARE, VUUKLE_FB_SHARE, VUUKLE_SOCIAL_LOGIN, VUUKLE_SOCIAL_LOGIN_SUCCESS ]
+let VUUKLE_URLS = [VUUKLE_NEWS_BASE_URL, VUUKLE_PRIVACY, VUUKLE_NOTIFICATION_BASE, VUUKLE_BASE, VUUKLE_MESSENGER_SHARE, VUUKLE_MAIL_SHARE, VUUKLE_TUMBLR_SHARE, VUUKLE_FLIPBOARD_SHARE, VUUKLE_PINTEREST_SHARE, VUUKLE_REDDIT_SHARE, VUUKLE_LINKEDIN_SHARE, VUUKLE_TELEGRAM_SHARE, VUUKLE_WEB_WHATSAPP_SHARE, VUUKLE_WHATSAPP_SHARE, VUUKLE_TWITTER_SHARE, VUUKLE_FB_SHARE, VUUKLE_SOCIAL_LOGIN, VUUKLE_SOCIAL_LOGIN_SUCCESS]
