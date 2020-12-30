@@ -13,6 +13,7 @@ class VuukleNewViewController: UIViewController {
     
     var wkWebView: WKWebView!
     var configuration = WKWebViewConfiguration()
+    var activityView = UIActivityIndicatorView()
     
     var urlString = ""
     var isLoadedSettings = false
@@ -93,6 +94,11 @@ class VuukleNewViewController: UIViewController {
         if let url = URL(string: urlString) {
             wkWebView.load(URLRequest(url: url))
         }
+        
+        activityView.center = self.view.center
+        self.view.addSubview(activityView)
+        activityView.isHidden = false
+        activityView.startAnimating()
     }
 }
 
@@ -100,6 +106,8 @@ extension VuukleNewViewController:  WKNavigationDelegate, WKUIDelegate  {
     
     // MARK: WKNavigationDelegate methods
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        activityView.isHidden = true
+        activityView.stopAnimating()
         self.wkWebView.isHidden = false
         webView.evaluateJavaScript("document.readyState", completionHandler: { (complete, error) in
             if complete != nil {
