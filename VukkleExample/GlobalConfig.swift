@@ -8,11 +8,15 @@
 
 import Foundation
 
-let VUUKLE_IFRAME = "https://cdn.vuukle.com/amp.html?url=https%3A%2F%2Fwww.prowrestling.com%2Fimpact-wrestling-results-1282020%2F&host=prowrestling.com&id=1196371&apiKey=46489985-43ef-48ed-9bfd-61971e6af217&img=https%3A%2F%2Fwww.prowrestling.com%2Fwp-content%2Fuploads%2F2020%2F12%2FKenny-Omega-Impact-Wrestling.jpeg&title=IMPACT%2BWrestling%2BResults%2B%252812%252F8%2529%253A%2BKenny%2BOmega%2BSpeaks%252C%2BKnockouts%2BTag%2BTournament%2BContinues%2521&tags=Featured"
+// Keys
+let PUBLISHER_PRIVATE_KEY = "bd3a64e4-7e19-46b2-ae4d-a2a0adc72cdf"
+let PUBLISHER_PUBLIC_KEY = "664e0b85-5b2c-4881-ba64-3aa9f992d01c"
+
+let VUUKLE_IFRAME = "https://cdn.vuukle.com/amp.html?url=https%3A%2F%2Fangry-hermann-1e0239.netlify.app%2F&host=angry-hermann-1e0239.netlify.app&id=123ggg45gerrge09876&apiKey=80355907-6cca-4663-97c0-081020788dd7&img=https%3A%2F%2Fpixabay.com%2Fen%2Fimage-statue-brass-child-art-1465348&title=test&tags=Featured"
 
 let VUUKLE_EMOTES = "https://cdn.vuukle.com/widgets/emotes.html?apiKey=c7368a34-dac3-4f39-9b7c-b8ac2a2da575&darkMode=false&host=smalltester.000webhostapp.com&articleId=381&img=https://smalltester.000webhostapp.com/wp-content/uploads/2017/10/wallhaven-303371-825x510.jpg&title=New&post&22&url=https://smalltester.000webhostapp.com/2017/12/new-post-22&emotesEnabled=true&firstImg=&secondImg=&thirdImg=&fourthImg=&fifthImg=&sixthImg=&totWideImg=false&articlesProtocol=http&hideArticles=false&disable=[]&iconsSize=70&first=HAPPY&second=INDIFFERENT&third=AMUSED&fourth=EXCITED&fifth=ANGRY&sixth=SAD&customText=%7B%7D"
 
-let VUUKLE_POWERBAR = "https://cdntest.vuukle.com/widgets/powerbar.html?amp=false&apiKey=664e0b85-5b2c-4881-ba64-3aa9f992d01c&host=relaxed-beaver-76304e.netlify.com&articleId=Index&img=https%3A%2F%2Fwww.gettyimages.ie%2Fgi-resources%2Fimages%2FHomepage%2FHero%2FUK%2FCMS_Creative_164657191_Kingfisher.jpg&title=Index&url=https%3A%2F%2Frelaxed-beaver-76304e.netlify.app%2F&tags=123&author=123&lang=en&gr=false&darkMode=false&defaultEmote=1&items=&standalone=0&mode=horizontal"
+let VUUKLE_POWERBAR = "https://cdn.vuukle.com/amp-sharebar.html?amp=false&apiKey=80355907-6cca-4663-97c0-081020788dd7&host=angry-hermann-1e0239.netlify.app&id=123ggg45gerrge09876&img=https%3A%2F%2Fwww.gettyimages.ie%2Fgi-resources%2Fimages%2FHomepage%2FHero%2FUK%2FCMS_Creative_164657191_Kingfisher.jpg&title=test&url=https%3A%2F%2Frelaxed-beaver-76304e.netlify.app%2F&tags=123&author=123&lang=en&gr=false&darkMode=false&defaultEmote=1&items=&mode=horizontal&comments=true&emotes=true"
 
 // Social Login URLs
 let VUUKLE_SOCIAL_LOGIN = "https://login.vuukle.com/auth"

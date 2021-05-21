@@ -12,13 +12,11 @@ import AVFoundation
 import MessageUI
 
 final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, UIScrollViewDelegate {
-    
-    @IBOutlet weak var containerForWKWebView: UIView!
+
     @IBOutlet weak var containerwkWebViewWithScript: UIView!
     @IBOutlet weak var containerForTopPowerBar: UIView!
     @IBOutlet weak var containerForBottomPowerBar: UIView!
     
-    @IBOutlet weak var someTextLabel: UILabel!
     @IBOutlet weak var heightWKWebViewWithScript: NSLayoutConstraint!
     @IBOutlet weak var heightWKWebViewConstraint: NSLayoutConstraint!
     @IBOutlet weak var heightScrollView: NSLayoutConstraint!
@@ -48,12 +46,37 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         configureWebView()
         askCameraAccess()
     }
+    
+    @IBAction func loginBySSOTapped(_ sender: UIButton) {
+        loginBySSO(email: "sometempmail@yopmail.com", username: "Sample User Name")
+    }
+    
+    @IBAction func logoutTapped(_ sender: UIButton) {
+        UserDefaults.standard.removeObject(forKey: "loginToken")
+        removeCookies()
+        let urlString = VUUKLE_IFRAME
+        if let url = URL(string: urlString) {
+            wkWebViewWithScript.load(URLRequest(url: url))
+        }
+    }
+    
+    func removeCookies() {
+        HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
+        print("All cookies deleted")
 
+        WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+            records.forEach { record in
+                WKWebsiteDataStore.default().removeData(ofTypes: record.dataTypes, for: [record], completionHandler: {})
+                print("Cookie ::: \(record) deleted")
+            }
+        }
+    }
+    
     @objc func configureWebView() {
         addWKWebViewForScript()
-        addWKWebViewForEmoji()
+//        addWKWebViewForEmoji()
         addWKWebViewForTopPowerBar()
-        addWKWebViewForBottomPowerBar()
+//        addWKWebViewForBottomPowerBar()
     }
     
     //Hide keyboard
@@ -116,29 +139,33 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         wkWebViewWithScript.isMultipleTouchEnabled = false
         wkWebViewWithScript.contentMode = .scaleAspectFit
         wkWebViewWithScript.scrollView.bouncesZoom = false
-        //self.heightWKWebViewWithScript.constant = scriptWebViewHeight
+        self.heightWKWebViewWithScript.constant = scriptWebViewHeight
         
-        if let url = URL(string: VUUKLE_IFRAME) {
+        var urlString = VUUKLE_IFRAME
+        if let loginToken = UserDefaults.standard.string(forKey: "loginToken") {
+            urlString += "&sso=true&loginToken=\(loginToken)"
+        }
+        if let url = URL(string: urlString) {
             wkWebViewWithScript.load(URLRequest(url: url))
         }
     }
     
     // Create WebView for Emoji
-    private func addWKWebViewForEmoji() {
-        
-        wkWebViewWithEmoji = WKWebView(frame: .zero, configuration: configuration)
-        self.containerForWKWebView.addSubview(wkWebViewWithEmoji)
-        
-        wkWebViewWithEmoji.translatesAutoresizingMaskIntoConstraints = false
-        wkWebViewWithEmoji.topAnchor.constraint(equalTo: self.containerForWKWebView.topAnchor).isActive = true
-        wkWebViewWithEmoji.bottomAnchor.constraint(equalTo: self.containerForWKWebView.bottomAnchor).isActive = true
-        wkWebViewWithEmoji.leftAnchor.constraint(equalTo: self.containerForWKWebView.leftAnchor).isActive = true
-        wkWebViewWithEmoji.rightAnchor.constraint(equalTo: self.containerForWKWebView.rightAnchor).isActive = true
-        
-        if let url = URL(string: VUUKLE_EMOTES) {
-            wkWebViewWithEmoji.load(URLRequest(url: url))
-        }
-    }
+//    private func addWKWebViewForEmoji() {
+//
+//        wkWebViewWithEmoji = WKWebView(frame: .zero, configuration: configuration)
+//        self.containerForWKWebView.addSubview(wkWebViewWithEmoji)
+//
+//        wkWebViewWithEmoji.translatesAutoresizingMaskIntoConstraints = false
+//        wkWebViewWithEmoji.topAnchor.constraint(equalTo: self.containerForWKWebView.topAnchor).isActive = true
+//        wkWebViewWithEmoji.bottomAnchor.constraint(equalTo: self.containerForWKWebView.bottomAnchor).isActive = true
+//        wkWebViewWithEmoji.leftAnchor.constraint(equalTo: self.containerForWKWebView.leftAnchor).isActive = true
+//        wkWebViewWithEmoji.rightAnchor.constraint(equalTo: self.containerForWKWebView.rightAnchor).isActive = true
+//
+//        if let url = URL(string: VUUKLE_EMOTES) {
+//            wkWebViewWithEmoji.load(URLRequest(url: url))
+//        }
+//    }
     
     // Create WebView for Top PowerBar
     private func addWKWebViewForTopPowerBar() {
@@ -326,6 +353,20 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         self.navigationController?.pushViewController(newsWindow, animated: true)
     }
     
+    private func loginBySSO(email: String, username: String) {
+        let authModel = AuthenticationModel(email: email, username: username)
+        
+        do {
+            let authModelData = try JSONEncoder().encode(authModel).base64EncodedString()
+            UserDefaults.standard.setValue(authModelData, forKey: "loginToken")
+            let urlString = VUUKLE_IFRAME + "&sso=true&loginToken=" + (UserDefaults.standard.string(forKey: "loginToken") ?? "")
+            if let url = URL(string: urlString) {
+                wkWebViewWithScript.load(URLRequest(url: url))
+            }
+        } catch {
+            
+        }
+    }
 }
 
 // MARK: - SEND EMAIL Metods
