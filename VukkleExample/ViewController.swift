@@ -12,7 +12,7 @@ import AVFoundation
 import MessageUI
 
 final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, UIScrollViewDelegate {
-
+    
     @IBOutlet weak var containerwkWebViewWithScript: UIView!
     @IBOutlet weak var containerForTopPowerBar: UIView!
     @IBOutlet weak var containerForBottomPowerBar: UIView!
@@ -39,12 +39,21 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         
         self.title = "VUUKLE"
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: .UIKeyboardWillShow, object: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(keyboardHide), name: .UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHide), name: .UIKeyboardWillHide, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(ViewController.configureWebView), name: NSNotification.Name("updateWebViews"), object: nil)
         
+        setWKWebViewConfigurations()
         configureWebView()
         askCameraAccess()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        let urlString = VUUKLE_IFRAME
+        if let url = URL(string: urlString) {
+            wkWebViewWithScript.load(URLRequest(url: url))
+        }
     }
     
     @IBAction func loginBySSOTapped(_ sender: UIButton) {
@@ -60,10 +69,38 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         }
     }
     
+    
+    
+    // Set wkwebview configurations
+    private func setWKWebViewConfigurations() {
+        let thePreferences = WKPreferences()
+        thePreferences.javaScriptCanOpenWindowsAutomatically = true
+        thePreferences.javaScriptEnabled = true
+        configuration.preferences = thePreferences
+        let source: String = "var meta = document.createElement('meta');" +
+            "meta.name = 'viewport';" +
+            "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';" +
+            "var head = document.getElementsByTagName('head')[0];" +
+            "head.appendChild(meta);"
+        
+        let script: WKUserScript = WKUserScript(source: source, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
+        let userContentController: WKUserContentController = WKUserContentController()
+        
+        userContentController.addUserScript(script)
+        configuration.userContentController = userContentController
+        configuration.processPool = WKProcessPool()
+        let cookies = HTTPCookieStorage.shared.cookies ?? [HTTPCookie]()
+        cookies.forEach({ if #available(iOS 11.0, *) {
+            configuration.websiteDataStore.httpCookieStore.setCookie($0, completionHandler: nil)
+        }
+        
+        })
+    }
+    
     func removeCookies() {
         HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
         print("All cookies deleted")
-
+        
         WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
             records.forEach { record in
                 WKWebsiteDataStore.default().removeData(ofTypes: record.dataTypes, for: [record], completionHandler: {})
@@ -74,9 +111,9 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     
     @objc func configureWebView() {
         addWKWebViewForScript()
-//        addWKWebViewForEmoji()
+        //        addWKWebViewForEmoji()
         addWKWebViewForTopPowerBar()
-//        addWKWebViewForBottomPowerBar()
+        //        addWKWebViewForBottomPowerBar()
     }
     
     //Hide keyboard
@@ -94,7 +131,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         //Code the lines you want to execute before keyboard pops up.
         isKeyboardOpened = true
     }
-
+    
     
     // Ask permission to use camera For adding photo in the comment box
     func askCameraAccess() {
@@ -151,21 +188,21 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     }
     
     // Create WebView for Emoji
-//    private func addWKWebViewForEmoji() {
-//
-//        wkWebViewWithEmoji = WKWebView(frame: .zero, configuration: configuration)
-//        self.containerForWKWebView.addSubview(wkWebViewWithEmoji)
-//
-//        wkWebViewWithEmoji.translatesAutoresizingMaskIntoConstraints = false
-//        wkWebViewWithEmoji.topAnchor.constraint(equalTo: self.containerForWKWebView.topAnchor).isActive = true
-//        wkWebViewWithEmoji.bottomAnchor.constraint(equalTo: self.containerForWKWebView.bottomAnchor).isActive = true
-//        wkWebViewWithEmoji.leftAnchor.constraint(equalTo: self.containerForWKWebView.leftAnchor).isActive = true
-//        wkWebViewWithEmoji.rightAnchor.constraint(equalTo: self.containerForWKWebView.rightAnchor).isActive = true
-//
-//        if let url = URL(string: VUUKLE_EMOTES) {
-//            wkWebViewWithEmoji.load(URLRequest(url: url))
-//        }
-//    }
+    //    private func addWKWebViewForEmoji() {
+    //
+    //        wkWebViewWithEmoji = WKWebView(frame: .zero, configuration: configuration)
+    //        self.containerForWKWebView.addSubview(wkWebViewWithEmoji)
+    //
+    //        wkWebViewWithEmoji.translatesAutoresizingMaskIntoConstraints = false
+    //        wkWebViewWithEmoji.topAnchor.constraint(equalTo: self.containerForWKWebView.topAnchor).isActive = true
+    //        wkWebViewWithEmoji.bottomAnchor.constraint(equalTo: self.containerForWKWebView.bottomAnchor).isActive = true
+    //        wkWebViewWithEmoji.leftAnchor.constraint(equalTo: self.containerForWKWebView.leftAnchor).isActive = true
+    //        wkWebViewWithEmoji.rightAnchor.constraint(equalTo: self.containerForWKWebView.rightAnchor).isActive = true
+    //
+    //        if let url = URL(string: VUUKLE_EMOTES) {
+    //            wkWebViewWithEmoji.load(URLRequest(url: url))
+    //        }
+    //    }
     
     // Create WebView for Top PowerBar
     private func addWKWebViewForTopPowerBar() {
@@ -209,7 +246,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         if keyPath == "contentSize" {
             if let scroll = object as? UIScrollView {
                 if scroll.contentSize.height > 0 && !isKeyboardOpened {
-                    print("scroll.contentSize.height = \(scroll.contentSize.height)")
+                    //                    print("scroll.contentSize.height = \(scroll.contentSize.height)")
                     self.heightWKWebViewWithScript.constant = scroll.contentSize.height
                     scriptWebViewHeight = scroll.contentSize.height
                 }
@@ -248,6 +285,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
                 return
             } else if newURL.hasPrefix(url) {
                 wkWebViewWithScript.load(URLRequest(url: URL(string: "about:blank")!))
+                print("current opening url:\(newURL)")
                 self.openNewsWindow(withURL: newURL)
                 return
             }
@@ -300,7 +338,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         }
         decisionHandler(WKNavigationActionPolicy.allow, preferences)
     }
-
+    
     func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
         //self.openNewsWindow(withURL: navigationResponse.response.url?.absoluteString ?? "")
         decisionHandler(.allow)
@@ -338,18 +376,18 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
             decisionHandler(.allow)
             return
         } else if navigationAction.navigationType == .other {
-                openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "")
+            openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "")
         }
         decisionHandler(.allow)
         return
     }
-   
+    
     func openNewsWindow(withURL: String) {
         let newsWindow = VuukleNewViewController()
         newsWindow.wkWebView = self.wkWebViewWithScript
         newsWindow.configuration = self.configuration
         newsWindow.urlString = withURL
-    
+        
         self.navigationController?.pushViewController(newsWindow, animated: true)
     }
     

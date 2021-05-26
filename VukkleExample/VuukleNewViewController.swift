@@ -32,13 +32,13 @@ class VuukleNewViewController: UIViewController {
         edgesForExtendedLayout = []
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        NotificationCenter.default.post(name: NSNotification.Name("updateWebViews"), object: nil)
-    }
+//    override func viewWillDisappear(_ animated: Bool) {
+//        NotificationCenter.default.post(name: NSNotification.Name("updateWebViews"), object: nil)
+//    }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        NotificationCenter.default.post(name: NSNotification.Name("updateWebViews"), object: nil)
-    }
+//    override func viewDidDisappear(_ animated: Bool) {
+//        NotificationCenter.default.post(name: NSNotification.Name("updateWebViews"), object: nil)
+//    }
     
     func addNewButtonsOnNavigationBar() {
         
