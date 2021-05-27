@@ -44,16 +44,12 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         NotificationCenter.default.addObserver(self, selector: #selector(ViewController.configureWebView), name: NSNotification.Name("updateWebViews"), object: nil)
         
         setWKWebViewConfigurations()
-        configureWebView()
         askCameraAccess()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        let urlString = VUUKLE_IFRAME
-        if let url = URL(string: urlString) {
-            wkWebViewWithScript.load(URLRequest(url: url))
-        }
+        configureWebView()
     }
     
     @IBAction func loginBySSOTapped(_ sender: UIButton) {
@@ -68,8 +64,6 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
             wkWebViewWithScript.load(URLRequest(url: url))
         }
     }
-    
-    
     
     // Set wkwebview configurations
     private func setWKWebViewConfigurations() {
@@ -115,6 +109,15 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         addWKWebViewForTopPowerBar()
         //        addWKWebViewForBottomPowerBar()
     }
+    
+    
+    
+               // let source: String = "var meta = document.createElement('meta');" +
+//                    "meta.name = 'viewport';" +
+//                    "meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';" +
+//                    "var head = document.getElementsByTagName('head')[0];" +
+//                    "head.appendChild(meta);"
+         
     
     //Hide keyboard
     @objc func keyboardHide() {
@@ -251,6 +254,8 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
                     scriptWebViewHeight = scroll.contentSize.height
                 }
             }
+            
+            
         }
     }
     
@@ -332,7 +337,9 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     
     @available(iOS 13.0, *)
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, preferences: WKWebpagePreferences, decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
-        if (navigationAction.request.url?.absoluteString ?? "").hasPrefix(VUUKLE_MAIL_TO_SHARE) {
+        if navigationAction.request.url?.absoluteString ==  VUUKLE_SETTINGS {
+            self.openNewWindow(newURL: VUUKLE_SETTINGS)
+        } else if (navigationAction.request.url?.absoluteString ?? "").hasPrefix(VUUKLE_MAIL_TO_SHARE) {
             let mailSubjectBody = parsMailSubjextAndBody(mailto: navigationAction.request.url?.absoluteString ?? "")
             sendEmail(subject: mailSubjectBody.subject, body: mailSubjectBody.body)
         }
@@ -357,13 +364,12 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     }
     
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        print("createWebViewWith")
-        openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "")
         
         webView.evaluateJavaScript("window.open = function(open) { return function (url, name, features) { window.location.href = url; return window; }; } (window.open);", completionHandler: nil)
         
         webView.evaluateJavaScript("window.close = function() { window.location.href = 'myapp://closewebview'; }", completionHandler: nil)
-        
+        openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "")
+
         return nil
     }
     
@@ -446,7 +452,6 @@ extension ViewController: MFMailComposeViewControllerDelegate {
         } else if let sparkUrl = sparkUrl, UIApplication.shared.canOpenURL(sparkUrl) {
             return sparkUrl
         }
-        
         return defaultUrl
     }
     

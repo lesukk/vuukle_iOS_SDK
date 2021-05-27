@@ -50,10 +50,25 @@ class VuukleNewViewController: UIViewController {
                 target: self.wkWebView,
                 action: #selector(WKWebView.goBack))
             self.backButton = backButton
+        } else {
+             let backButton = UIBarButtonItem(
+                image: UIImage(named: "arrow-left")?.withRenderingMode(.alwaysTemplate),
+                style: .plain,
+                target: self.wkWebView,
+                action: #selector(WKWebView.goBack))
+            self.backButton = backButton
         }
         if #available(iOS 13.0, *) {
             let forwardButton = UIBarButtonItem(
                 image: UIImage(systemName: "arrow.right")!.withTintColor(.blue, renderingMode: .alwaysTemplate),
+                style: .plain,
+                target: self.wkWebView,
+                action: #selector(WKWebView.goForward))
+            
+            self.forwardButton = forwardButton
+        } else {
+            let forwardButton = UIBarButtonItem(
+                image: UIImage(named: "arrow-right")?.withRenderingMode(.alwaysTemplate),
                 style: .plain,
                 target: self.wkWebView,
                 action: #selector(WKWebView.goForward))
@@ -163,3 +178,6 @@ extension VuukleNewViewController:  WKNavigationDelegate, WKUIDelegate  {
         completionHandler(true)
     }
 }
+
+
+
