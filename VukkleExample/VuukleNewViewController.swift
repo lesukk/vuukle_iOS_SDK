@@ -33,7 +33,7 @@ class VuukleNewViewController: UIViewController {
     }
     
 //    override func viewWillDisappear(_ animated: Bool) {
-//        NotificationCenter.default.post(name: NSNotification.Name("updateWebViews"), object: nil)
+//        wkWebView.scrollView.removeObserver(self, forKeyPath: "contentSize", context: nil)
 //    }
     
 //    override func viewDidDisappear(_ animated: Bool) {
@@ -42,7 +42,7 @@ class VuukleNewViewController: UIViewController {
     
     func addNewButtonsOnNavigationBar() {
         
-        self.navigationController?.setToolbarHidden(false, animated: true)
+        self.navigationController?.setToolbarHidden(true, animated: true)
         if #available(iOS 13.0, *) {
             let backButton = UIBarButtonItem(
                 image: UIImage(systemName: "arrow.left")!.withTintColor(.blue, renderingMode: .alwaysTemplate),
@@ -74,7 +74,6 @@ class VuukleNewViewController: UIViewController {
                 action: #selector(WKWebView.goForward))
             self.forwardButton = forwardButton
         }
-        
         navigationItem.rightBarButtonItems = [self.forwardButton!, self.backButton!]
     }
     
@@ -89,15 +88,15 @@ class VuukleNewViewController: UIViewController {
         let cookies = HTTPCookieStorage.shared.cookies ?? [HTTPCookie]()
         cookies.forEach({ if #available(iOS 11.0, *) {
             config.websiteDataStore.httpCookieStore.setCookie($0, completionHandler: nil)
-        } else {
-            
         } })
-        
-        wkWebView = WKWebView(frame: self.view.frame, configuration: config)
+        config.applicationNameForUserAgent = "Version/8.0.2 Safari/600.2.5"
+        wkWebView = WKWebView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height), configuration: config)
+//        wkWebView.scrollView.contentSize.height += 100
         self.view.addSubview(wkWebView)
         
         wkWebView.navigationDelegate = self
         wkWebView.uiDelegate = self
+//        wkWebView.scrollView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
         self.wkWebView.isHidden = true
         self.view.backgroundColor = .white
         
@@ -107,7 +106,11 @@ class VuukleNewViewController: UIViewController {
             isLoadedSettings = false
         }
         if let url = URL(string: urlString) {
-            wkWebView.load(URLRequest(url: url))
+            
+            let userAgent = USER_AGENT
+            var myURLRequest = URLRequest(url: url)
+            myURLRequest.setValue(userAgent, forHTTPHeaderField:"user-agent")
+            wkWebView.load(myURLRequest)
         }
         
         activityView.center = self.view.center
