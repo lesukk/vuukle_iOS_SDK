@@ -91,12 +91,10 @@ class VuukleNewViewController: UIViewController {
         } })
         config.applicationNameForUserAgent = "Version/8.0.2 Safari/600.2.5"
         wkWebView = WKWebView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height), configuration: config)
-//        wkWebView.scrollView.contentSize.height += 100
         self.view.addSubview(wkWebView)
         
         wkWebView.navigationDelegate = self
         wkWebView.uiDelegate = self
-//        wkWebView.scrollView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
         self.wkWebView.isHidden = true
         self.view.backgroundColor = .white
         
@@ -137,7 +135,7 @@ extension VuukleNewViewController:  WKNavigationDelegate, WKUIDelegate  {
     }
     
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        
+    
         webView.load(navigationAction.request)
         webView.evaluateJavaScript("window.open = function(open) { return function (url, name, features) { window.location.href = url; return window; }; } (window.open);", completionHandler: nil)
         webView.evaluateJavaScript("window.close = function() { window.location.href = 'myapp://closewebview'; }", completionHandler: nil)
@@ -167,10 +165,17 @@ extension VuukleNewViewController:  WKNavigationDelegate, WKUIDelegate  {
                 }
             }
         }
-        
+
         decisionHandler(.allow)
         return
     }
+    
+    func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+            guard let serverTrust = challenge.protectionSpace.serverTrust else { return completionHandler(.useCredential, nil) }
+            let exceptions = SecTrustCopyExceptions(serverTrust)
+            SecTrustSetExceptions(serverTrust, exceptions)
+            completionHandler(.useCredential, URLCredential(trust: serverTrust))
+        }
    
     func webView(_ webView: WKWebView, shouldPreviewElement elementInfo: WKPreviewElementInfo) -> Bool {
         return true

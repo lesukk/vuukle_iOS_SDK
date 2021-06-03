@@ -46,12 +46,17 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         
         setWKWebViewConfigurations()
         addNewButtonsOnNavigationBar()
+        configureWebView()
         askCameraAccess()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        configureWebView()
+        wkWebViewWithScript.reload()
+    }
+    
+    override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
+        view.endEditing(true)
     }
     
     @objc func loginBySSOTapped() {
@@ -68,7 +73,6 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     }
     
     func addNewButtonsOnNavigationBar() {
-       
         
         let login = UIBarButtonItem(title: "LOGIN", style: .plain, target: self, action: #selector(loginBySSOTapped))
         login.setBackgroundImage(UIImage(named: "dark_gray"), for: .normal, barMetrics: .default)
@@ -313,7 +317,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         }
     }
     
-    private func openNewWindow(newURL: String) {
+    private func openNewWindow(newURL: String, openWindow: Bool = false) {
         for url in VUUKLE_URLS {
             if newURL.hasPrefix(VUUKLE_MAIL_SHARE) {
                 let mailSubjectBody = parsMailSubjextAndBody(mailto: newURL)
@@ -330,7 +334,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
                 self.openNewsWindow(withURL: newURL)
                 return
             } else {
-                if #available(iOS 13, *) {
+                if openWindow {
                     self.openNewsWindow(withURL: newURL)
                 }
               
@@ -378,15 +382,14 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     @available(iOS 13.0, *)
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, preferences: WKWebpagePreferences, decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
         
-        
         print("URL :\(navigationAction.request.url?.absoluteString ?? "")")
         if navigationAction.request.url?.absoluteString == VUUKLE_SETTINGS {
-            self.openNewWindow(newURL: VUUKLE_SETTINGS)
+            self.openNewWindow(newURL: VUUKLE_SETTINGS, openWindow: true)
         } else if (navigationAction.request.url?.absoluteString ?? "").hasPrefix(VUUKLE_MAIL_TO_SHARE) {
             let mailSubjectBody = parsMailSubjextAndBody(mailto: navigationAction.request.url?.absoluteString ?? "")
             sendEmail(subject: mailSubjectBody.subject, body: mailSubjectBody.body)
         } else if (navigationAction.request.url?.absoluteString ?? "").hasPrefix(VUUKLE_MESSENGER_SHARE) {
-            openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "")
+            openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "", openWindow: true)
         }
         decisionHandler(WKNavigationActionPolicy.allow, preferences)
     }
@@ -413,7 +416,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         webView.evaluateJavaScript("window.open = function(open) { return function (url, name, features) { window.location.href = url; return window; }; } (window.open);", completionHandler: nil)
         
         webView.evaluateJavaScript("window.close = function() { window.location.href = 'myapp://closewebview'; }", completionHandler: nil)
-        openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "")
+        openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "", openWindow: true)
 
         return nil
     }
@@ -422,11 +425,11 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         
         //        self.heightWKWebViewWithScript.constant = scriptWebViewHeight
         if navigationAction.navigationType == .linkActivated {
-            openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "")
+            openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "", openWindow: true)
             decisionHandler(.allow)
             return
         } else if navigationAction.navigationType == .other {
-            openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "")
+            openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "") //, openWindow: true)
         }
         decisionHandler(.allow)
         return
