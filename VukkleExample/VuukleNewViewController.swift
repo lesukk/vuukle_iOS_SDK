@@ -90,7 +90,13 @@ class VuukleNewViewController: UIViewController {
             config.websiteDataStore.httpCookieStore.setCookie($0, completionHandler: nil)
         } })
         config.applicationNameForUserAgent = "Version/8.0.2 Safari/600.2.5"
-        wkWebView = WKWebView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height), configuration: config)
+        
+        let navBarHeight = UIApplication.shared.statusBarFrame.size.height +
+                 (navigationController?.navigationBar.frame.height ?? 0.0)
+        let safeAreaHeight = self.view.frame.height - navBarHeight
+        print(safeAreaHeight)
+        
+        wkWebView = WKWebView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: safeAreaHeight), configuration: config)
         self.view.addSubview(wkWebView)
         
         wkWebView.navigationDelegate = self

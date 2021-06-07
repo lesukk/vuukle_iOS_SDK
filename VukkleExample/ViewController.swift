@@ -4,7 +4,6 @@
 //
 //  Created by MAC_7 on 12/21/17.
 //  Copyright © 2017 MAC_7. All rights reserved.
-//
 
 import UIKit
 import WebKit
@@ -34,7 +33,9 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     var isKeyboardOpened = false
     let name = "Ross"
     let email = "email@sda"
-   
+    
+    private var isWkWebViewWithScriptCreated = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -42,8 +43,8 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardHide), name: .UIKeyboardWillHide, object: nil)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(ViewController.configureWebView), name: NSNotification.Name("updateWebViews"), object: nil)
-        
+        //        NotificationCenter.default.addObserver(self, selector: #selector(ViewController.configureWebView), name: NSNotification.Name("updateWebViews"), object: nil)
+        //
         setWKWebViewConfigurations()
         addNewButtonsOnNavigationBar()
         configureWebView()
@@ -52,11 +53,16 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        wkWebViewWithScript.reload()
+        
+        if isWkWebViewWithScriptCreated {
+            wkWebViewForTopPowerBar.reload()
+            configureWKWebViewWithScript()
+        }
     }
     
-    override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
-        view.endEditing(true)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        isWkWebViewWithScriptCreated = true
     }
     
     @objc func loginBySSOTapped() {
@@ -79,20 +85,19 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         login.setTitleTextAttributes([
                                         NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12),
                                         NSAttributedStringKey.foregroundColor: UIColor.white],
-                                    for: .normal)
+                                     for: .normal)
         let logout = UIBarButtonItem(title: "LOGOUT", style: .plain, target: self, action: #selector(logoutTapped))
         logout.setBackgroundImage(UIImage(named: "dark_gray"), for: .normal, barMetrics: .default)
         logout.setTitleTextAttributes([
                                         NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12),
                                         NSAttributedStringKey.foregroundColor: UIColor.white],
-                                    for: .normal)
-       
+                                      for: .normal)
+        
         logout.tintColor = .white
         
         navigationItem.rightBarButtonItems = [logout, login]
     }
     
-
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
         if scrollView.contentOffset.y > 10 {
@@ -154,7 +159,6 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         //        addWKWebViewForBottomPowerBar()
     }
     
-    
     //Hide keyboard
     @objc func keyboardHide() {
         //Code the lines to hide the keyboard and the extra lines you want to execute before keyboard hides.
@@ -162,6 +166,10 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     }
     
     @objc func keyboardHided() {
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.wkWebViewForTopPowerBar.reload()
+        }
         isKeyboardOpened = false
     }
     
@@ -183,10 +191,6 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         }
     }
     
-    //    override func viewWillDisappear(_ animated: Bool) {
-    //        wkWebViewWithScript.scrollView.removeObserver(self, forKeyPath: "contentSize", context: nil)
-    //    }
-    
     // Create WebView for Comment Box
     private func addWKWebViewForScript() {
         
@@ -200,6 +204,13 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         wkWebViewWithScript.uiDelegate = self
         self.containerwkWebViewWithScript.addSubview(wkWebViewWithScript)
         
+        configureWKWebViewWithScript()
+        
+    }
+    
+    
+    private func configureWKWebViewWithScript() {
+        
         wkWebViewWithScript.translatesAutoresizingMaskIntoConstraints = false
         //   wkWebViewWithScript.scrollView.layer.masksToBounds = false
         
@@ -211,8 +222,8 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         wkWebViewWithScript.rightAnchor.constraint(equalTo: self.containerwkWebViewWithScript.rightAnchor).isActive = true
         
         // Added this Observer for detect wkWebView's scrollview contentSize height updates
-        //        wkWebViewWithScript.scrollView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
-        //  wkWebViewWithScript.scrollView.isScrollEnabled = false
+        // wkWebViewWithScript.scrollView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
+        // wkWebViewWithScript.scrollView.isScrollEnabled = false
         wkWebViewWithScript.isMultipleTouchEnabled = false
         wkWebViewWithScript.contentMode = .scaleAspectFit
         wkWebViewWithScript.scrollView.bouncesZoom = false
@@ -231,7 +242,6 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
             // wkWebViewWithScript.load(URLRequest(url: url))
         }
     }
-    
     // Create WebView for Emoji
     //    private func addWKWebViewForEmoji() {
     //
@@ -263,7 +273,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         wkWebViewForTopPowerBar.uiDelegate = self
         wkWebViewForTopPowerBar.navigationDelegate = self
         wkWebViewForTopPowerBar.scrollView.isScrollEnabled = false
-
+        
         if let url = URL(string: VUUKLE_POWERBAR) {
             wkWebViewForTopPowerBar.load(URLRequest(url: url))
         }
@@ -323,6 +333,17 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
                 let mailSubjectBody = parsMailSubjextAndBody(mailto: newURL)
                 sendEmail(subject: mailSubjectBody.subject, body: mailSubjectBody.body)
                 return
+            } else if newURL.hasPrefix(VUUKLE_WHATSAPP_SHARE) {
+                let appURL = URL(string: newURL)!
+                if UIApplication.shared.canOpenURL(appURL) {
+                    if #available(iOS 10.0, *) {
+                        UIApplication.shared.open(appURL, options: [:], completionHandler: nil)
+                    }
+                    else {
+                        UIApplication.shared.openURL(appURL)
+                    }
+                }
+                return
             } else if newURL.hasPrefix(VUUKLE_MESSENGER_SHARE) {
                 let messengerUrlString = replaceLinkSymboles(text: newURL)
                 guard let messengerUrl = URL(string: messengerUrlString) else { return }
@@ -337,7 +358,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
                 if openWindow {
                     self.openNewsWindow(withURL: newURL)
                 }
-              
+                
                 return
             }
         }
@@ -415,9 +436,11 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         
         webView.evaluateJavaScript("window.open = function(open) { return function (url, name, features) { window.location.href = url; return window; }; } (window.open);", completionHandler: nil)
         
+        
         webView.evaluateJavaScript("window.close = function() { window.location.href = 'myapp://closewebview'; }", completionHandler: nil)
+        print( navigationAction.request.url?.absoluteString )
         openNewWindow(newURL: navigationAction.request.url?.absoluteString ?? "", openWindow: true)
-
+        
         return nil
     }
     
