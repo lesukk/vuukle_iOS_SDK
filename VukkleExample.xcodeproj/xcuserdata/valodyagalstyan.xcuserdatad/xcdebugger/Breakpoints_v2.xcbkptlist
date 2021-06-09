@@ -14,9 +14,9 @@
             filePath = "VukkleExample/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "212"
-            endingLineNumber = "212"
-            landmarkName = "openNewWindow(newURL:)"
+            startingLineNumber = "204"
+            endingLineNumber = "204"
+            landmarkName = "configureWKWebViewWithScript()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -30,57 +30,9 @@
             filePath = "VukkleExample/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "279"
-            endingLineNumber = "279"
-            landmarkName = "webView(_:decidePolicyFor:decisionHandler:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "98B4CECB-5D9A-487A-83EE-D6C9C25256A2"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "VukkleExample/ViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "287"
-            endingLineNumber = "287"
-            landmarkName = "webView(_:runJavaScriptAlertPanelWithMessage:initiatedByFrame:completionHandler:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "E7B69DCF-DE0B-4A92-8A7D-F5691372C717"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "VukkleExample/ViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "291"
-            endingLineNumber = "291"
-            landmarkName = "webView(_:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:completionHandler:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "A723A13D-F5C1-4B75-B470-09F469DDB0FC"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "VukkleExample/ViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "308"
-            endingLineNumber = "308"
-            landmarkName = "webView(_:decidePolicyFor:decisionHandler:)"
+            startingLineNumber = "249"
+            endingLineNumber = "249"
+            landmarkName = "addWKWebViewForTopPowerBar()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -94,9 +46,9 @@
             filePath = "VukkleExample/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "228"
-            endingLineNumber = "228"
-            landmarkName = "openNewWindow(newURL:)"
+            startingLineNumber = "216"
+            endingLineNumber = "216"
+            landmarkName = "configureWKWebViewWithScript()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -110,9 +62,9 @@
             filePath = "VukkleExample/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "234"
-            endingLineNumber = "234"
-            landmarkName = "webView(_:didFinish:)"
+            startingLineNumber = "221"
+            endingLineNumber = "221"
+            landmarkName = "configureWKWebViewWithScript()"
             landmarkType = "7">
             <Locations>
                <Location
@@ -158,9 +110,9 @@
             filePath = "VukkleExample/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "263"
-            endingLineNumber = "263"
-            landmarkName = "webView(_:previewingViewControllerForElement:defaultActions:)"
+            startingLineNumber = "233"
+            endingLineNumber = "233"
+            landmarkName = "addWKWebViewForTopPowerBar()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -174,9 +126,9 @@
             filePath = "VukkleExample/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "274"
-            endingLineNumber = "274"
-            landmarkName = "webView(_:decidePolicyFor:preferences:decisionHandler:)"
+            startingLineNumber = "244"
+            endingLineNumber = "244"
+            landmarkName = "addWKWebViewForTopPowerBar()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -190,9 +142,9 @@
             filePath = "VukkleExample/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "270"
-            endingLineNumber = "270"
-            landmarkName = "webView(_:decidePolicyFor:preferences:decisionHandler:)"
+            startingLineNumber = "240"
+            endingLineNumber = "240"
+            landmarkName = "addWKWebViewForTopPowerBar()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -206,10 +158,10 @@
             filePath = "VukkleExample/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "211"
-            endingLineNumber = "211"
-            landmarkName = "openNewWindow(newURL:)"
-            landmarkType = "7">
+            startingLineNumber = "203"
+            endingLineNumber = "203"
+            landmarkName = "ViewController"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -222,9 +174,9 @@
             filePath = "VukkleExample/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "121"
-            endingLineNumber = "121"
-            landmarkName = "addWKWebViewForScript()"
+            startingLineNumber = "116"
+            endingLineNumber = "116"
+            landmarkName = "setWKWebViewConfigurations()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -238,9 +190,9 @@
             filePath = "VukkleExample/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "139"
-            endingLineNumber = "139"
-            landmarkName = "addWKWebViewForEmoji()"
+            startingLineNumber = "134"
+            endingLineNumber = "134"
+            landmarkName = "setWKWebViewConfigurations()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -254,9 +206,9 @@
             filePath = "VukkleExample/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "122"
-            endingLineNumber = "122"
-            landmarkName = "addWKWebViewForScript()"
+            startingLineNumber = "117"
+            endingLineNumber = "117"
+            landmarkName = "setWKWebViewConfigurations()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

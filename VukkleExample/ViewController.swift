@@ -14,9 +14,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     
     @IBOutlet weak var containerwkWebViewWithScript: UIView!
     @IBOutlet weak var containerForTopPowerBar: UIView!
-    //    @IBOutlet weak var containerForBottomPowerBar: UIView!
     
-    //    @IBOutlet weak var heightWKWebViewWithScript: NSLayoutConstraint!
     @IBOutlet weak var containerTopPowerBarTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var heightWKWebViewConstraint: NSLayoutConstraint!
     @IBOutlet weak var heightScrollView: NSLayoutConstraint!
@@ -42,9 +40,6 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         self.title = "VUUKLE"
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardHide), name: .UIKeyboardWillHide, object: nil)
-        
-        //        NotificationCenter.default.addObserver(self, selector: #selector(ViewController.configureWebView), name: NSNotification.Name("updateWebViews"), object: nil)
-        //
         setWKWebViewConfigurations()
         addNewButtonsOnNavigationBar()
         configureWebView()
@@ -154,9 +149,7 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     
     @objc func configureWebView() {
         addWKWebViewForScript()
-        //        addWKWebViewForEmoji()
         addWKWebViewForTopPowerBar()
-        //        addWKWebViewForBottomPowerBar()
     }
     
     //Hide keyboard
@@ -208,11 +201,9 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         
     }
     
-    
     private func configureWKWebViewWithScript() {
         
         wkWebViewWithScript.translatesAutoresizingMaskIntoConstraints = false
-        //   wkWebViewWithScript.scrollView.layer.masksToBounds = false
         
         wkWebViewWithScript.scrollView.delegate = self
         
@@ -221,13 +212,9 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         wkWebViewWithScript.leftAnchor.constraint(equalTo: self.containerwkWebViewWithScript.leftAnchor).isActive = true
         wkWebViewWithScript.rightAnchor.constraint(equalTo: self.containerwkWebViewWithScript.rightAnchor).isActive = true
         
-        // Added this Observer for detect wkWebView's scrollview contentSize height updates
-        // wkWebViewWithScript.scrollView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
-        // wkWebViewWithScript.scrollView.isScrollEnabled = false
         wkWebViewWithScript.isMultipleTouchEnabled = false
         wkWebViewWithScript.contentMode = .scaleAspectFit
         wkWebViewWithScript.scrollView.bouncesZoom = false
-        //        self.heightWKWebViewWithScript.constant = scriptWebViewHeight
         
         var urlString = VUUKLE_IFRAME
         if let loginToken = UserDefaults.standard.string(forKey: "loginToken") {
@@ -239,25 +226,8 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
             var myURLRequest = URLRequest(url: url)
             myURLRequest.setValue(userAgent, forHTTPHeaderField:"user-agent")
             wkWebViewWithScript.load(myURLRequest)
-            // wkWebViewWithScript.load(URLRequest(url: url))
         }
     }
-    // Create WebView for Emoji
-    //    private func addWKWebViewForEmoji() {
-    //
-    //        wkWebViewWithEmoji = WKWebView(frame: .zero, configuration: configuration)
-    //        self.containerForWKWebView.addSubview(wkWebViewWithEmoji)
-    //
-    //        wkWebViewWithEmoji.translatesAutoresizingMaskIntoConstraints = false
-    //        wkWebViewWithEmoji.topAnchor.constraint(equalTo: self.containerForWKWebView.topAnchor).isActive = true
-    //        wkWebViewWithEmoji.bottomAnchor.constraint(equalTo: self.containerForWKWebView.bottomAnchor).isActive = true
-    //        wkWebViewWithEmoji.leftAnchor.constraint(equalTo: self.containerForWKWebView.leftAnchor).isActive = true
-    //        wkWebViewWithEmoji.rightAnchor.constraint(equalTo: self.containerForWKWebView.rightAnchor).isActive = true
-    //
-    //        if let url = URL(string: VUUKLE_EMOTES) {
-    //            wkWebViewWithEmoji.load(URLRequest(url: url))
-    //        }
-    //    }
     
     // Create WebView for Top PowerBar
     private func addWKWebViewForTopPowerBar() {
@@ -283,32 +253,14 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     private func addWKWebViewForBottomPowerBar() {
         
         wkWebViewForBottonPowerBar = WKWebView(frame: .zero, configuration: configuration)
-        //        self.containerForBottomPowerBar.addSubview(wkWebViewForBottonPowerBar)
-        
+
         wkWebViewForBottonPowerBar.translatesAutoresizingMaskIntoConstraints = false
-        //        wkWebViewForBottonPowerBar.topAnchor.constraint(equalTo: self.containerForBottomPowerBar.topAnchor).isActive = true
-        //        wkWebViewForBottonPowerBar.bottomAnchor.constraint(equalTo: self.containerForBottomPowerBar.bottomAnchor).isActive = true
-        //        wkWebViewForBottonPowerBar.leftAnchor.constraint(equalTo: self.containerForBottomPowerBar.leftAnchor).isActive = true
-        //        wkWebViewForBottonPowerBar.rightAnchor.constraint(equalTo: self.containerForBottomPowerBar.rightAnchor).isActive = true
         wkWebViewForBottonPowerBar.uiDelegate = self
         wkWebViewForBottonPowerBar.navigationDelegate = self
         if let url = URL(string: VUUKLE_POWERBAR) {
             wkWebViewForBottonPowerBar.load(URLRequest(url: url))
         }
     }
-    
-    // Observer for detect wkWebView's scrollview contentSize height updates
-    //    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-    //        if keyPath == "contentSize" {
-    //            if let scroll = object as? UIScrollView {
-    //                if scroll.contentSize.height > 0 && !isKeyboardOpened {
-    //                    print("scroll.contentSize.height = \(scroll.contentSize.height)")
-    //                    self.heightWKWebViewWithScript.constant = scroll.contentSize.height
-    //                    scriptWebViewHeight = scroll.contentSize.height
-    //                }
-    //            }
-    //        }
-    //    }
     
     // MARK: - Clear cookie
     
@@ -364,23 +316,6 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
         }
     }
     
-    // MARK: - WKNavigationDelegate methods
-    //
-    //    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-    //        print("BASE URL = \(webView.url?.absoluteString ?? "")")
-    //        webView.evaluateJavaScript("document.readyState", completionHandler: { (complete, error) in
-    //            if complete != nil {
-    //                webView.evaluateJavaScript("document.body.offsetHeight", completionHandler: { (height, error) in
-    //                    // You can detect webView's scrollView contentSize height
-    //                    if webView == self.wkWebViewWithScript {
-    //                        self.heightWKWebViewWithScript.constant = (height as? CGFloat) ?? 0.0
-    //                        self.scriptWebViewHeight = height as! CGFloat
-    //                    }
-    //                })
-    //            }
-    //        })
-    //    }
-    
     // MARK: - WKUIDelegate methods
     func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {
         let alertController = UIAlertController(title: prompt, message: defaultText, preferredStyle: .alert)
@@ -416,7 +351,6 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
     }
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
-        //self.openNewsWindow(withURL: navigationResponse.response.url?.absoluteString ?? "")
         decisionHandler(.allow)
     }
     
