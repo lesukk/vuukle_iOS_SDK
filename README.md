@@ -11,22 +11,14 @@ import WebKit
 
 override func viewDidLoad() {
     super.viewDidLoad()
-
-    // MARK: - Create WKWebView with configuration
-
-    let configuration = WKWebViewConfiguration()
-    let wkWebView = WKWebView(frame: "your frame", configuration: configuration)
     
-    // MARk: - Add WKWebView to main view
-    
-    self.view.addSubview(wkWebView)
-    
-    let urlName = "yourUrl"
-    
-    if let url = URL(string: urlName) {
-        wkWebView.load(URLRequest(url: url))
-    }
-    
+    self.title = "VUUKLE"
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: .UIKeyboardWillShow, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardHide), name: .UIKeyboardWillHide, object: nil)
+    setWKWebViewConfigurations()
+    addNewButtonsOnNavigationBar()
+    configureWebView()
+    askCameraAccess()
 }
 ```
 
